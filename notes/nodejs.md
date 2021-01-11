@@ -6,6 +6,33 @@
 
 # 系统模块
 
+## fs
+
+f：file 文件 ，s：system 系统，文件操作系统。
+
+```js
+fs.reaFile('文件路径/文件名称'[,'文件编码'], callback); // 读取文件
+fs.writeFile('文件路径/文件名称', '数据', callback); // 写入文件
+```
+
+## path
+
+路径操作
+
+路径拼接原因：不同操作系统的路径分隔符不统一
+
+Windows 上是 `\ /` ， Linux 上是 `/`
+
+```js
+path.join('路径', '路径', ...)
+```
+
+- 大多情况使用绝对路径，相对路径相对命令行工具当前工作目录
+
+- 读取文件或者设置文件路径时都会选择绝对路径
+
+- 使用`__dirname`获取当前文件所在绝对路径
+
 ## http
 
 ### http协议
@@ -125,9 +152,12 @@ HTTP状态码
      // 监听参数传输完毕事件
      req.on('end', () => { 
          console.log(querystring.parse(postData)); 
+         // parse默认为false，返回Object
      }); 
  });
 ```
+
+> 如果要解析数据，要在end事件中解析
 
 [express获取参数](#express获取参数)
 
@@ -162,9 +192,13 @@ HTTP状态码
 
 # 第三方模块
 
-别人写好的、具有特定功能的、我们能直接使用的模块即第三方模块，由于第三方模块通常都是由多个文件组成并且被放置在一个文件夹中，所以又名包。
+别人写好的、具有特定功能的、我们能直接使用的模块即第三方模块，由于第三方模块通常都是由多个文件组成并且被放置在一个文件夹中，所以又名包
 
-npmjs.com：第三方模块的存储和分发仓库
+两种存在形式
+
+- js文件的形式存在，提供实现项目具体功能的API接口。
+
+- 命令行工具形式存在，辅助项目开发
 
 ## npm
 
@@ -289,23 +323,41 @@ browsersync 浏览器实时同步
 
 **mongoDB数据库添加账号**
 
+命令行 help 查看命令列表
+
 ```shell
-1. 以系统管理员的方式运行powershell
-2. 连接数据库 mongo
-3. 查看数据库 show dbs
-4. 切换到admin数据库 use admin
-5. 创建超级管理员账户 db.createUser()
-6. 切换到blog数据 use blog
-7. 创建普通账号 db.createUser()
-8. 卸载mongodb服务
-         1. 停止服务 net stop mongodb
-         2. mongod --remove
-9. 创建mongodb服务
-          mongod --logpath="C:\Program Files\MongoDB\Server\4.1\log\mongod.log" --dbpath="C:\Program          Files\MongoDB\Server\4.1\data" --install –-auth
-10. 启动mongodb服务 net start mongodb
-11. 在项目中使用账号连接数据库
-          mongoose.connect('mongodb://user:pass@localhost:port/database')
+#1. 以系统管理员的方式运行powershell
+#2. 连接数据库
+mongo
+#3. 查看数据库
+show dbs
+#4. 切换到admin数据库
+use admin
+#5. 创建超级管理员账户 user-账号，pwd-密码，roles-权限 （root-超级管理员）
+#db.createUser({user:'root',pwd:'root',roles:['root']})
+db.createUser()
+#6. 切换到blog
+use blog
+#7. 创建普通账号 (readWrite-读写权限)
+#  db.createUser({user:'blog',pwd:'123456',roles:['readWrite']})
+db.createUser()
+# exit 退出mongodb
+#8. 卸载mongodb服务
+   #1.停止服务 
+   net stop mongodb
+   #2.溢出mongdb服务
+   mongodb --remove
+#9. 创建mongodb服务  logpath-日志路径 dbpath-数据库路径 install-安装 auth-开启验证
+mongod --logpath='C:\Program Files\MongoDB\Server\4.4\log\mongod.log' --dbpath='C:\Program Files\MongoDB\Server\4.4\data' --install --auth
+#10. 启动mongodb服务
+net start mongodb
+#11. 连接数据库 mongodb://username:password@localhost:port/database
+mongoose.connect('mongodb://blog:123456@localhost:27017/blog')
+#12 以后先登录超级管理员
+db.auth('root','root')
 ```
+
+> #11 database 需要和 #6中 database 对应
 
 ### mongoose
 
@@ -406,18 +458,18 @@ Course.create({name: 'Node.js course'}).then(doc => console.log(doc)).catch(err 
 
 ```js
 find() //  查找所有文档
-findOne({name: 'Node.js course'})//  根据条件查找文档
-find({age: {$gt: 20, $lt: 50}} //  匹配大于 小于
-find({hobbies: {$in: ['敲代码']}}) //  匹配包含
-find().select('name email')  //  选择要查询的字段  
-find().sort('age') // 将数据按照年龄进行排序
-find().skip(2).limit(2) //  skip 跳过多少条数据  limit 限制查询数量
+findOne({name: 'Node.js course'})//  查找name为..数据，默认第一条
+find({age: {$gt: 20, $lt: 50}} //  匹配年龄大于20小于40,双闭
+find({hobbies: {$in: ['敲代码']}}) //  hobbies中包含'敲代码'
+find().select('name email -_id')  //  选择name，email字段输出，去掉id字段
+find().sort('age') //  按照年龄升序排序 
+find().skip(2).limit(2) //  跳过前2条，显示3条数据
 ```
 
 ##### 删除文档
 
 ```js
-findOneAndDelete({}) // 删除单个
+findOneAndDelete({}) // 删除单个，返回删除数据
 deleteMany({}) // 删除多个
 ```
 
@@ -430,9 +482,14 @@ updateMany({查询条件}, {要更改的值})// 更新多个
 
 #### 导入数据
 
-`mongoimport –d 数据库名称 –c 集合名称 –file 要导入的数据文件`
+```shell
+# 未开启验证
+mongoimport –d 数据库名称 –c 集合名称 –file 要导入的数据文件
+# 开启验证 - 并且为json数据
+mongoimport -u root -p root --authenticationDatabase admin -d mongooseExp  -c userlists /jsonArray user.json
+```
 
-找到mongodb数据库的安装目录，将安装目录下的bin目录放置在环境变量中。
+> 找到mongodb数据库的安装目录，将安装目录下的bin目录放置在环境变量中。
 
 ### mongoose-sex-page
 
@@ -980,7 +1037,48 @@ Joi.validate({ username: 'abc', birthyear: 1994 }, schema);
 
 ![image-20210108135319815](nodejs_image/image-20210108135319815.png)
 
-# 模块加载机制
+# 模块
+
+## 模块规范化
+
+lNode.js规定一个**JavaScript**文件**就是一个模块，模块**内部定义的变量和函数**默认情况下在**外部无法得到
+
+### 导出 - exports
+
+```js
+// 在模块内部定义变量
+let version = 1.0;
+// 在模块内部定义方法
+const sayHi = name => `您好, ${name}`;
+// 向模块外部导出数据 
+exports.version = version;
+module.exports.sayHi = sayHi;
+```
+
+`exports`是`module.exports`的地址引用，导出对象最终以module.exports为准
+
+exports只是前者一个引用，容易丢失，前者指向被覆盖，后者导出3
+
+```js
+exports = 3;
+module.exports = 3;
+```
+
+
+
+### 导入 - require
+
+```js
+let a = require('./b.js'); // 后缀可省
+// 输出b模块中的version变量
+console.log(a.version);
+// 调用b模块中的sayHi方法 并输出其返回值
+console.log(a.sayHi('123')); 
+```
+
+
+
+## 模块加载机制
 
 ### 模块查找规则
 
