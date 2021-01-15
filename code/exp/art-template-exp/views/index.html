@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生档案</title>
+    <!-- <link rel="stylesheet" href="/public/css/index.css"> -->
+    <link rel="stylesheet" href="/css/index.css">
+</head>
+
+<body>
+    <form action="/add" method="post">
+        <fieldset>
+            <legend>学生档案</legend>
+            <div class="input-group">
+                <label for="">姓名:</label>
+                <input class="normal" type="text" name="name" id="" placeholder="请输入姓名" autofocus>
+            </div>
+            <div class="input-group">
+                <label for="">年龄:</label>
+                <input class="normal" type="text" name="age" id="" placeholder="请输入年龄" autofocus>
+            </div>
+            <div class="input-group">
+                <label for="">性别:</label>
+                <input type="radio" name="sex" id="" value="0">男
+                <input type="radio" name="sex" id="" value="1">女
+            </div>
+            <div class="input-group">
+                <label for="">邮箱地址:</label>
+                <input class="normal" type="text" name="email" id="" placeholder="请输入邮箱地址" autofocus>
+            </div>
+            <div class="input-group">
+                <label for="">爱好</label>
+                <input type="checkbox" name="hobbies" id="" value="敲代码">敲代码
+                <input type="checkbox" name="hobbies" id="" value="打篮球">打篮球
+                <input type="checkbox" name="hobbies" id="" value="睡觉">睡觉
+            </div>
+            <div class="input-group">
+                <label for="">所属学院:</label>
+                <select class="normal" name="college" id="">
+                    <option value="前端与移动开发">前端与移动开发</option>
+                    <option value="PHP">PHP</option>
+                    <option value="JAVA">JAVA</option>
+                    <option value="Android">Android</option>
+                    <option value="IOS">IOS</option>
+                    <option value="UI设计">UI设计</option>
+                    <option value="C++">C++</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="">入学日期:</label>
+                <input class="normal" type="date" name="enterDate" placeholder="请输入邮箱地址" autofocus>
+            </div>
+            <div class="input-group btn">
+                <label for=""></label>
+                <input type="submit" value="提交" class="normal">
+            </div>
+
+        </fieldset>
+    </form>
+</body>
+
+</html>
