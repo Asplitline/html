@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+</head>
+
+<body>
+    <div id="app">
+        <!-- 旧版语法的两种写法 -->
+        <base-layout>
+            <!-- 1 -->
+            <p slot='header'>标题信息</p>
+            <p>主要内容1</p>
+            <p>主要内容2</p>
+            <!-- 2 -->
+            <template slot='footer'>
+                <p>底部信息信息</p>
+            </template>
+        </base-layout>
+        <!-- 2.6新语法 -->
+        <base-layout>
+            <template v-slot:header>
+                <h1>Here might be a page title</h1>
+            </template>
+            <!-- 默认为 v-slot:default -->
+            <!-- <template v-slot:default> -->
+            <p>A paragraph for the main content.</p>
+            <p>And another one.</p>
+            <!-- </template> -->
+            <template v-slot:footer>
+                <p>Here's some contact info</p>
+            </template>
+        </base-layout>
+    </div>
+    <script src="../vue.js"></script>
+    <script>
+        Vue.component('base-layout', {
+            template: `
+                <div class="container">
+                    <header>
+                        <slot name="header"></slot>
+                    </header> 
+                    <main>
+                        <slot></slot>
+                    </main>   
+                    <footer>
+                        <slot name="footer"></slot>
+                    </footer>
+                </div>`,
+        })
+        var vm = new Vue({
+            el: '#app',
+        })
+    </script>
+</body>
+
+</html>

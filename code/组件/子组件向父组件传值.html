@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+</head>
+
+<body>
+    <div id="app">
+        <span :style='{fontSize:size+"px"}'>测试</span>
+        <my-component @enlarge-text="handle"></my-component>
+    </div>
+    <script src="../vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                msg: 'hello world',
+                size: 10,
+            },
+            methods: {
+                handle(val) {
+                    this.size += val;
+                }
+            },
+            components: {
+                'myComponent': {
+                    data() {
+                        return {}
+                    },
+                    template: `
+                        <div>
+                            <button @click="$emit('enlarge-text',5)">plus5</button>
+                            <button @click="$emit('enlarge-text',10)">plus10</button>
+                            </div>
+                    `,
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Template • TodoMVC</title>
+	<link rel="stylesheet" href="css/base.css">
+	<link rel="stylesheet" href="css/index.css">
+</head>
+
+<body>
+	<section class="todoapp">
+		<header class="header">
+			<h1>todos</h1>
+			<input class="new-todo" placeholder="What needs to be done?" autofocus @keyup.enter="addTask" v-focus>
+		</header>
+		<!-- This section should be hidden by default and shown when there are todos -->
+		<section class="main">
+			<input id="toggle-all" class="toggle-all" type="checkbox" v-model="toggleNum">
+			<label for="toggle-all">Mark all as complete</label>
+			<ul class="todo-list">
+				<!-- These are here just to show the structure of the list items -->
+				<!-- List items should get the class `editing` when editing and `completed` when marked as completed -->
+				<li :class="{completed:item.status,editing:item===currentData}" v-for="(item,index) in tasks"
+					:key="item.id">
+					<div class="view">
+						<input class="toggle" type="checkbox" v-model="item.status">
+						<label @dblclick="editTask(item)">{{item.title}}</label>
+						<button class="destroy" @click="remove(index)"></button>
+					</div>
+					<input class="edit" :value="item.title" @keyup.enter="editTask(item,index,$event)"
+						@keyup.esc="currentData = null" @blur="editTask(item,index,$event)">
+				</li>
+			</ul>
+		</section>
+		<!-- This footer should hidden by default and shown when there are todos -->
+		<footer class=" footer">
+			<span class="todo-count"><strong>{{leftNum}}</strong> item left</span>
+			<!-- Remove this if you don't implement routing -->
+			<ul class="filters">
+				<li>
+					<a class="selected" href="#/">All</a>
+				</li>
+				<li>
+					<a href="#/active">Active</a>
+				</li>
+				<li>
+					<a href="#/completed">Completed</a>
+				</li>
+			</ul>
+			<!-- Hidden if no completed items are left ↓ -->
+			<button class="clear-completed">Clear completed</button>
+		</footer>
+	</section>
+	<footer class="info">
+		<p>Double-click to edit a todo</p>
+		<!-- Remove the below line ↓ -->
+		<p>Template by <a href="http://sindresorhus.com">Sindre Sorhus</a></p>
+		<!-- Change this out with your name and url ↓ -->
+		<p>Created by <a href="http://todomvc.com">you</a></p>
+		<p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
+	</footer>
+
+	<script src="js/vue.js"></script>
+	<script>
+		let vm = new Vue({
+			el: '.todoapp',
+			data: {
+				tasks: [],
+				currentData: null,
+			},
+			methods: {
+				addTask: function (evt) {
+					this.tasks.push({
+						title: evt.target.value,
+						status: false,
+						id: this.tasks.length + 1,
+					});
+					evt.target.value = '';
+				},
+				remove: function (index) {
+					this.tasks.splice(index, 1);
+				},
+				editTask: function (item, index, evt) {
+					this.currentData = item;
+					if (index != undefined) {
+						this.currentData = null;
+						let newTitle = evt.target.value.trim();
+						if (newTitle.length == 0) {
+							return this.tasks.splice(index, 1);
+						}
+						item.title = newTitle;
+					}
+				},
+			},
+			computed: {
+				leftNum: function () {
+					return this.tasks.filter(item => item.status == false).length;
+				},
+				toggleNum: {
+					get: function () {
+						return this.tasks.every(item => item.status);
+					},
+					set: function (status) {
+						this.tasks.forEach(item => item.status = status);
+					}
+				}
+			},
+			directives: {
+				focus: {
+					inserted: function (el) {
+						el.focus();
+					}
+				}
+			},
+			mounted: function () {
+				this.tasks = [
+					{ id: 1, title: '吃饭', status: false },
+					{ id: 2, title: '睡觉', status: true },
+					{ id: 3, title: '打豆豆', status: false },
+				];
+			}
+
+		})
+	</script>
+</body>
+
+</html>

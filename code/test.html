@@ -1,0 +1,31 @@
+<html>
+
+<head>
+    <script src="vue.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <!--当F2键按下并抬起后，触发add事件方法-->
+        自定义按键F2<input type="text" v-model="name" v-on:keyup.F2="add(name)" />
+    </div>
+
+    <script>
+        //自定义全局键盘码别名（自己定义全局按键修饰符）
+        Vue.config.keyCodes.F2 = 113;
+
+        var vm = new Vue({
+            el: "#app",
+            data: {
+                name: '',
+            },
+            methods: {
+                add: function (name) { alert(name) },
+            },
+            filters: {
+            }
+        })
+    </script>
+</body>
+
+</html>

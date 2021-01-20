@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        p {
+            background-color: red;
+            color: #fff;
+        }
+
+        .active {
+            border: 1px solid red;
+            width: 100px;
+            height: 100px;
+        }
+
+        .error {
+            background-color: orange;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="app">
+        <p>1.绑定href</p>
+        <a v-bind:href="url">{{msg}}</a>
+        <a :href="url">{{msg}}</a>
+
+        <p>2.绑定class</p>
+        <p>对象方式</p>
+        <div :class="{active:isA,error:isE}"></div>
+        <p>数组方式</p>
+        <div :class="[aClass,eClass]"></div>
+        <p>组合使用</p>
+        <div :class="[aClass,{error:isE}]"></div>
+
+        <p>3.绑定style</p>
+        <div :style='{border: borderStyle, width: widthStyle, height: heightStyle}'></div>
+        <div :style='objStyles'></div>
+        <div :style='[objStyles,overrideStyles]'></div>
+
+    </div>
+    <script src="../vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                msg: 'baidu',
+                url: 'http://www.baidu.com',
+                isA: true,
+                isE: true,
+                aClass: 'active',
+                eClass: 'error',
+                borderStyle: '1px solid blue',
+                widthStyle: '100px',
+                heightStyle: '200px',
+                objStyles: {
+                    border: '1px solid green',
+                    width: '200px',
+                    height: '100px'
+                },
+                overrideStyles: {
+                    border: '5px solid orange',
+                    backgroundColor: 'blue'
+                }
+            },
+        })
+    </script>
+</body>
+
+</html>

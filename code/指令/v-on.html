@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        p {
+            background-color: red;
+            color: #fff;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="app">
+        <p>1 - 事件基础</p>
+        <div>{{num}}</div>
+        <div>
+            <button v-on:click="num++">click</button>
+            <button @click="num++">click</button>
+            <button @click="handle1">click</button>
+            <button @click="handle1()">click</button>
+        </div>
+        <p>2 - 事件传参</p>
+        <div>
+            <!-- 事件直接绑定函数名称
+                默认事件对象作为第一个参数 -->
+            <button @click="handle2_1">click</button>
+            <!-- 事件绑定函数调用
+                事件对象必须作为最后一个参数，且名称必须是$event  -->
+            <button @click="handle2_2(123,456,$event)">click</button>
+        </div>
+        <p>3 - 事件修饰符</p>
+        <div @click="handle3_1">
+            <!-- 阻止事件冒泡 -->
+            <button @click.stop="handle3_2">click</button>
+        </div>
+        <!-- 阻止默认行为 -->
+        <a href="https://www.baidu.com" @click.prevent>click</a>
+        <p>4 - 按键修饰符</p>
+        <div>
+            <form action="">
+                <input type="text" name="" id="" @keyup.delete="handle4_1" @keyup.F2="handle4_2" v-model='msg'>
+            </form>
+        </div>
+    </div>
+    <script src="../vue.js"></script>
+    <script>
+        Vue.config.keyCodes.F2 = 113;
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                num: 0,
+                msg: ''
+            },
+            methods: {
+                handle1: function () {
+                    // this == Vue实例对象(vm)
+                    this.num++;
+                },
+                handle2_1: function (evt) {
+                    console.log(evt.target.innerHTML);
+                },
+                handle2_2: function (a, b, evt) {
+                    console.log(a, b, evt.target.innerHTML);
+                },
+                handle3_1: function () {
+                    alert('handle3_1');
+                },
+                handle3_2: function () {
+                    alert('handle3_2');
+                },
+                handle4_1: function () {
+                    this.msg = "";
+                },
+                handle4_2: function () {
+                    this.msg = "add text";
+                }
+
+            }
+        })
+    </script>
+</body>
+
+</html>

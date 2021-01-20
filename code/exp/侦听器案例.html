@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+</head>
+
+<body>
+    <div id="app">
+        <div>
+            <span>用户名:</span>
+            <input type="text" v-model.lazy="uname">
+        </div>
+        <span>{{tip}}</span>
+    </div>
+    <script src="../vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                uname: '',
+                tip: ''
+            },
+            methods: {
+                checkName: function (val) {
+                    // 非箭头函数，需要that=this，保存当前this指向
+                    // 利用定时器模拟验证
+                    setTimeout(() => {
+                        if (val == 'admin') {
+                            this.tip = '用户名已经存在';
+                        }
+                        else {
+                            this.tip = '用户名可以使用';
+                        }
+                        // console.log(this.tip);
+                    }, 1000);
+                }
+            },
+            watch: {
+                uname: function (val) {
+                    this.checkName(val);
+                    this.tip = "正在验证...";
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

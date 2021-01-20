@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+</head>
+
+<body>
+    <div id="app">
+        <my-component msg='father msg' :title-w='word'></my-component>
+    </div>
+    <script src="../vue.js"></script>
+    <script>
+        Vue.component('my-component', {
+            data() {
+                return {
+                    test: 'son msg'
+                }
+            },
+            props: ['msg', 'titleW'],
+            template: '<div>{{msg+"-----"+ titleW}}</div>'
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                word: 'father word',
+            }
+        })
+    </script>
+</body>
+
+</html>

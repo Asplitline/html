@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+</head>
+
+<body>
+    <div id="app">
+        <input type="text" name="" id="" v-model="val">
+        <button @click="add">添加</button>
+        <button @click="del">删除</button>
+        <button @click="rep">替换</button>
+        <span v-for="item in arr">{{item}} </span>
+    </div>
+    <script src="../vue.js"></script>
+    <script>
+        /*
+            Vue数组操作
+            1、变异方法：会影响数组的原始数据的变化。
+            2、替换数组：不会影响原始的数组数据，而是形成一个新的数组。
+        */
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                val: '',
+                arr: ['lisi', 'zhangsan', 'wangwu'],
+            },
+            methods: {
+                add: function () {
+                    this.arr.push(this.val);
+                },
+                del: function () {
+                    this.arr.pop();
+                },
+                rep: function () {
+                    this.arr = this.arr.slice(0, 2);
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

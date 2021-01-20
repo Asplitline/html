@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        ul {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+            overflow: hidden;
+        }
+
+        li {
+            float: left;
+            width: 100px;
+            height: 45px;
+            border: 1px solid #00f;
+            text-align: center;
+            line-height: 45px;
+        }
+
+        li:nth-child(n+2) {
+            border-left: none;
+        }
+
+        .current {
+            background-color: #ffa500;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <ul>
+            <li :key="item.id" v-for="item in list" @click="handle(item.id)" :class="{current:currentIndex==item.id}">
+                {{item.title}}</li>
+        </ul>
+        <div  v-show="item.id==currentIndex" v-for="item in list">
+            <img :key="item.id" :src="item.path" alt="">
+        </div>
+    </div>
+    <script src="../vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                currentIndex: 1,
+                list: [{
+                    id: 1,
+                    title: 'apple',
+                    path: 'img/apple.png'
+                }, {
+                    id: 2,
+                    title: 'orange',
+                    path: 'img/orange.png'
+                }, {
+                    id: 3,
+                    title: 'lemon',
+                    path: 'img/lemon.png'
+                }]
+            },
+            methods: {
+                handle: function (id) {
+                    this.currentIndex = id;
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

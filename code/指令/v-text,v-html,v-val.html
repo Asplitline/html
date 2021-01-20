@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+</head>
+
+<body>
+    <div id="app">
+        <div>{{msg}}</div>
+        <div v-text='msg'></div>
+        <div v-html='msg1'></div>
+        <div v-pre>{{msg1}}</div>
+    </div>
+    <script src="../vue.js"></script>
+    <script>
+        /*
+            1、v-text指令用于将数据填充到标签中，作用于插值表达式类似，但是没有闪动问题
+            2、v-html指令用于将HTML片段填充到标签中，但是可能有安全问题
+            3、v-pre用于显示原始信息
+        */
+        var vm = new Vue({
+            el: '#app',//设置操作元素
+            data: {
+                msg: 'hello world',
+                msg1: '<h1>hello world</h1>'
+            }
+        })
+    </script>
+</body>
+
+</html>

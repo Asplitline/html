@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+</head>
+
+<body>
+    <div id="app">
+        <div>{{computed}}</div>
+        <div>{{computed}}</div>
+        <div>{{mymethod()}}</div>
+        <div>{{mymethod()}}</div>
+    </div>
+    <script src="../vue.js"></script>
+    <script>
+        // 计算属性是基于依赖进行缓存的，而方法不缓存
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                msg: 'hello world'
+            },
+            methods: {
+                mymethod: function () {
+                    let sum = 0;
+                    console.log('mymethod');
+                    for (let i = 0; i < 10; i++) sum += i;
+                    return sum;
+                }
+            },
+            computed: {
+                computed: function () {
+                    let sum = 0;
+                    console.log('computed');
+                    for (let i = 0; i < 10; i++) sum += i;
+                    return sum;
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+</head>
+
+<body>
+    <div id="app">
+        <my-component :list="list">
+            <template v-slot:default="slotProps">
+                <!-- <template v-slot="slotProps"> -->
+                {{slotProps.info.name}}
+            </template>
+        </my-component>
+    </div>
+    <script src="../vue.js"></script>
+    <script>
+        Vue.component('my-component', {
+            props: ['list'],
+            template: `
+                <ul>
+                  <li v-for="item in list">
+                      <slot :info="item">无数据</slot>
+                  </li>  
+                </ul>
+            `,
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                list: [{ name: 'apple' }, { name: 'orange' }, { name: 'banana' }]
+            }
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+</head>
+
+<body>
+    <div id="app">
+        <ul>
+            <li v-for="item in arr">{{item}} </li>
+        </ul>
+    </div>
+    <script src="../vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                arr: ['lisi', 'zhangsan', 'wangwu'],
+                obj: {
+                    name: 'myqz'
+                }
+            }
+        })
+
+        vm.$set(vm.arr, 3, 'zhaoliu');
+        vm.$set(vm.obj, 'name', '123');
+    </script>
+</body>
+
+</html>

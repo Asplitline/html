@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #app {
+            width: 500px;
+            margin: 40px auto;
+            background-color: skyblue;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        tr,
+        th,
+        td {
+            border: 1px dashed #ffa500;
+            height: 40px;
+            line-height: 40px;
+            background-color: #ffffff;
+        }
+
+        .total {
+            height: 50px;
+        }
+
+        .total span {
+            height: 20px;
+        }
+    </style>
+</head>
+
+
+<body>
+    <div id="app">
+        <h2>图书管理</h2>
+        <div class="book">
+            <label for="">编号:</label>
+            <input type="text" name="id" v-model="id" :disabled="flag" v-focus>
+            <label for="">名称:</label>
+            <input type="text" name="name" v-model="name">
+            <button @click="deal">提交</button>
+        </div>
+        <div class="total">
+            图书总数：<span>{{totalNum}}</span><br>
+            <span v-if="tip" style="color: red;">{{tip}}</span>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>名称</th>
+                    <th>时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="item in books">
+                    <td>{{item.id}}</td>
+                    <td>{{item.name}}</td>
+                    <td>{{item.date|format}}</td>
+                    <td>
+                        <a href @click.prevent="modify(item.id)">修改</a> |
+                        <a href @click.prevent="remove(item.id)">删除</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+    <script src="../vue.js"></script>
+    <script>
+        // 必须在vm实例创建之前定义
+        Vue.filter('format', function (val) {
+            val = new Date(val);
+            // console.log(val.getFullYear() + '-' + val.getMonth() + 1 + '-' + val.getDate()
+            //     + '  ' + val.getHours() + ':' + val.getMinutes() + ':' + val.getMilliseconds());
+            return val.getFullYear() + '-' + val.getMonth() + 1 + '-' + val.getDate()
+                + '  ' + val.getHours() + ':' + val.getMinutes();
+        });
+        Vue.directive('focus', {
+            inserted: function (el) {
+                el.focus()
+            }
+        })
+        let vm = new Vue({
+            el: '#app',
+            data: {
+                msg: 'hello',
+                books: [],
+                id: '',
+                name: '',
+                date: '',
+                flag: false,
+                tip: ''
+            },
+            methods: {
+                deal: function () {
+                    if (this.flag) {
+                        this.books.some(item => {
+                            if (item.id == this.id) {
+                                item.name = this.name;
+                                item.date = Date.now();
+                                return true;
+                            }
+                        })
+                        this.id = '';
+                        this.name = '';
+                        this.flag = false;
+                    } else {
+                        let obj = {
+                            id: this.id,
+                            name: this.name,
+                            date: Date.now(),
+                        }
+                        this.books.push(obj);
+                    }
+                },
+                remove: function (id) {
+                    this.books = this.books.filter(item => item.id != id);
+                },
+                modify: function (id) {
+                    let data = this.books.find(item => item.id == id);
+                    this.id = data.id;
+                    this.name = data.name;
+                    this.date = data.date;
+                    this.flag = true;
+                }
+            },
+            computed: {
+                totalNum: function () {
+                    return this.books.length;
+                }
+            },
+            watch: {
+                id: function (val) {
+                    let isExist = this.books.findIndex(item => item.id == val);
+                    if (isExist != -1) {
+                        this.tip = '图书id已存在';
+                    } else {
+                        this.tip = '';
+                    }
+                }
+            },
+            // 该生命周期钩子函数被触发的时候，模板已经可以使用
+            // 一般此时用于获取后台数据，然后把数据填充到模板
+            mounted: function () {
+                this.books = [{
+                    id: 1,
+                    name: '三国演义',
+                    date: 1610800784864
+                }, {
+                    id: 2,
+                    name: '水浒传',
+                    date: 1610800784864
+                }, {
+                    id: 3,
+                    name: '红楼梦',
+                    date: 1610800784864
+                }, {
+                    id: 4,
+                    name: '西游记',
+                    date: 1610800784864
+                }];
+            }
+        })
+
+
+    </script>
+</body>
+
+</html>

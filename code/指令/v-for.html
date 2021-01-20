@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        p {
+            background-color: red;
+            color: #fff;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="app">
+        <p>遍历数组</p>
+        <ul>
+            <li v-for='(item,index) in fruits'>
+                {{index + '------'+ item}}
+            </li>
+        </ul>
+
+        <ul>
+            <li v-for='item in myFruits' :key='item.id'>
+                {{item.id}}
+                {{item.ename}}
+                {{item.cname}}
+            </li>
+        </ul>
+        <p>遍历对象</p>
+        <ul>
+            <li v-for='(val,key,index) in obj '>
+                {{val +'----' +key+'----'+ index}}
+            </li>
+        </ul>
+    </div>
+    <script src="../vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                fruits: ['apple', 'orange', 'banana'],
+                myFruits: [{
+                    id: 1,
+                    ename: 'apple',
+                    cname: '苹果'
+                }, {
+                    id: 2,
+                    ename: 'orange',
+                    cname: '橘子'
+                }, {
+                    id: 3,
+                    ename: 'banana',
+                    cname: '香蕉'
+                }],
+                obj: {
+                    uname: 'zhangsan',
+                    age: 13,
+                    gender: 'female'
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

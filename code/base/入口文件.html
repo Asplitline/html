@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+</head>
+
+<body>
+    <div id="app">
+        {{msg}}
+    </div>
+    <script src="../vue.js"></script>
+    <!-- Vue 一旦引入，全局作用域声明一个构造函数Vue -->
+    <script>
+        //新建vue实例
+        var vm = new Vue({
+            el: '#app',//设置操作元素
+            data: {
+                msg: 'hello world'
+            }
+        })
+        //$ 公有属性
+        //_ 私有属性
+    </script>
+</body>
+
+</html>
