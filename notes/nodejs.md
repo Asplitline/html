@@ -918,8 +918,11 @@ http://localhost:3000/static/images/kitten.jpg
  app.set('views', path.join(__dirname, 'views'));
   // 渲染模板时不写后缀 默认拼接art后缀
  app.set('view engine', 'art');
-  // 变量设置到app.locals对象，在所有的模板中都可以获取到
+  // 变量设置到app.locals对象
  app.locals.users = [{ name: '张三',age: 20},{name: '李四',age: 20}]
+// 有express对象,直接取,app.locals.users
+// 无直接express对象,通过请求头 req.app.locals.users
+// 模板中 users
  app.get('/', (req, res) => {
      res.render('index');// 渲染模板
  }); 
@@ -952,6 +955,10 @@ app.use(session({ secret: 'secret key' }));
 
 允许开发人员将不同运行环境下的应用配置信息抽离到单独的文件中，模块内部自动判断当前应用的运行环境，读取对应的配置信息，避免了当运行环境重复的多次切换时，手动到修改配置信息
 
+- config是通过 NODE_ENV 判断当前环境
+  - development - 开发
+  - production - 生产
+
 ```shell
 # 1.使用命令下载模块
  npm install config
@@ -969,9 +976,17 @@ app.use(session({ secret: 'secret key' }));
 # 3.项目运行时config模块查找系统环境变量，并读取其值作为当前配置项属于的值
 ```
 
+```js
+const conf = require('config');
+conf.get('title');
+conf.get('db.host');
+```
+
 ![image-20210108135634668](nodejs_image/image-20210108135634668.png)
 
-![image-20201214214101534](nodejs_image/image-20201214214101534.png)
+<img src="nodejs_image/image-20201214214101534.png" alt="image-20201214214101534" style="zoom:80%;" />
+
+
 
 ## bcrypt
 

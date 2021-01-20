@@ -1,0 +1,10 @@
+{
+    "title": "博客后台管理系统-开发",
+    "db": {
+        "host": "localhost",
+        "user": "blog",
+        "pwd": "123456",
+        "port": "27017",
+        "dbname": "blog"
+    }
+}

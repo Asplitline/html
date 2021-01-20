@@ -11,8 +11,13 @@
   "license": "ISC",
   "dependencies": {
     "art-template": "^4.13.2",
+    "bcrypt": "^5.0.0",
+    "config": "^3.3.3",
     "express": "^4.17.1",
     "express-art-template": "^1.0.1",
-    "mongoose": "^5.11.12"
+    "express-session": "^1.17.1",
+    "formidable": "^1.2.2",
+    "mongoose": "^5.11.12",
+    "mongoose-sex-page": "^1.2.4"
   }
 }

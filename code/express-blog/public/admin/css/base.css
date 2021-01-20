@@ -16,9 +16,7 @@ a, a:hover {
 	text-decoration: none;
 }
 
-a:hover {
-
-}
+a:hover {}
 
 h4 {
 	margin: 0;
@@ -38,7 +36,7 @@ h4 {
 	position: fixed;
 	left: 0;
 	top: 0;
-	box-shadow: 0 1px 2px 0 rgba(40,42,49,.16);
+	box-shadow: 0 1px 2px 0 rgba(40, 42, 49, .16);
 	z-index: 100;
 }
 
@@ -50,7 +48,7 @@ h4 {
 	color: #FFF;
 	font-size: 18px;
 	font-weight: bold;
-	background-image: linear-gradient(100deg,#1c5de7,#1c91e7);
+	background-image: linear-gradient(100deg, #1c5de7, #1c91e7);
 }
 
 .header .logo i {
@@ -130,9 +128,7 @@ h4 {
 	margin-top: 50px;
 }
 
-.menu li {
-
-}
+.menu li {}
 
 .menu .item {
 	display: block;
@@ -149,8 +145,7 @@ h4 {
 	color: #FFF;
 }
 
-.menu .active:before,
-.menu .item:hover:before {
+.menu .active:before, .menu .item:hover:before {
 	content: '';
 	position: absolute;
 	left: 0;
@@ -205,7 +200,6 @@ h4 {
 .main .pagination {
 	margin: 0;
 }
-
 
 .form-container {
 	padding: 20px;
@@ -305,7 +299,7 @@ h4 {
 	position: absolute;
 	top: 25px;
 	font-size: 16px;
-	color: rgba(0,0,0,.4);
+	color: rgba(0, 0, 0, .4);
 }
 
 .statistics .count {
@@ -351,4 +345,9 @@ h4 {
 
 .modal-content {
 	display: block;
+}
+
+.main .pagination .current {
+	background-color: #1c89e7;
+	color: #fff;
 }
