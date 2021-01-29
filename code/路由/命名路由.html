@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../vue.js"></script>
+    <script src="../vue-router.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <!-- 命名路由 -->
+        <router-link :to="{ name: 'user', params: {id: 3} }">User</router-link>
+        <!-- 路由占位符 -->
+        <router-view></router-view>
+    </div>
+    <script>
+        const User = {
+            props: ['id'],
+            template: '<h1>{{id}}</h1>'
+        }
+        // 创建路由实例对象
+        const router = new VueRouter({
+            routes: [{ path: '/:id', name: 'user', component: User, props: true }]
+        })
+
+        // 创建 vm 实例对象
+        const vm = new Vue({
+            // 指定控制的区域
+            el: '#app',
+            data: {},
+            // 挂载路由实例对象
+            router
+        })
+    </script>
+</body>
+
+</html>

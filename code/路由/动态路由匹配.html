@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,34 +8,52 @@
     <script src="../vue.js"></script>
     <script src="../vue-router.js"></script>
 </head>
+
 <body>
     <div id='app'>
         <!-- /传送数据 -->
-        <router-link to='/user/id/10/name/星形线'>click</router-link>
+        <router-link to='/user/10'>method1</router-link>
+        <router-link to='/name/zs'>method2</router-link>
+        <router-link to='/list/qwe'>method3</router-link>
+        <router-link to='/end/qwe'>method4</router-link>
         <router-view></router-view>
     </div>
 </body>
 <script>
-
+    // 1.使用$route获取数据
+    const User = {
+        // router会为vue添加共有属性 $route
+        template: '<h1>{{$route.params.id}}</h1>'
+    }
+    // 2.利用props传数据
+    const Name = {
+        props: ['name'],
+        template: '<h1>{{name}}</h1>'
+    }
+    // 3.name 将无法传过来，只有props生效
+    const List = {
+        props: ['id', 'age', 'name'],
+        template: '<h1>{{id}}-----{{age}}-----{{name}}</h1>'
+    }
+    // 4.利用函数实现
+    const End = {
+        props: ['id', 'age', 'name'],
+        template: '<h1>{{id}}-----{{age}}-----{{name}}</h1>'
+    }
     var router = new VueRouter({
-        routes:[
-            {
-                // 获取数据 - 变量名前加 :
-                path:'/user/id/:id/name/:name',
-                component:{
-                    mounted(){
-                        // router会为vue添加共有属性 $route
-                        console.log(this.$route.params.id);
-                    },
-                    template:'<p>----{{$route.params.id}}----{{$route.params.name}}</p>'
-                }
-            }
+        routes: [
+            // 获取数据 - 变量名前加 :
+            { path: '/user/:id', component: User },
+            { path: '/name/:name', component: Name, props: true },
+            { path: '/list/:name', component: List, props: { age: 18, id: 1 } },
+            { path: '/end/:name', component: End, props: route => ({ age: 18, id: 1, name: route.params.name }) }
         ]
     })
     var app = new Vue({
-        el:'#app',
-        data:{},
+        el: '#app',
+        data: {},
         router
     })
 </script>
+
 </html>

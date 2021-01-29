@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../vue.js"></script>
+    <script src="../vue-router.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <!-- 路由占位符 -->
+        <router-view></router-view>
+    </div>
+    <script>
+        const User = {
+            template: `
+            <div>
+                <button @click="go">goRegister</button>
+            </div> 
+            `,
+            methods: {
+                go() {
+                    // 利用push 跳转
+                    this.$router.push('/register')
+                }
+            }
+        }
+        const Register = {
+            template: `
+                <div>
+                    <h1>你好，张三</h1>
+                    <button @click="back">back</button>
+                 </div> 
+            `,
+            methods: {
+                back() {
+                    // 利用go回退
+                    this.$router.go(-1)
+                }
+            }
+        }
+        const router = new VueRouter({
+            routes: [
+                { path: '/', redirect: '/user' },
+                { path: '/user', component: User },
+                { path: '/register', component: Register }
+            ]
+        })
+        const vm = new Vue({
+            // 指定控制的区域
+            el: '#app',
+            data: {},
+            // 挂载路由实例对象
+            // router: router
+            router
+        })
+    </script>
+</body>
+
+</html>

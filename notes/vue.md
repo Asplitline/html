@@ -1134,59 +1134,6 @@ vue 在组件中提供了**props** 选项，props 接受一个在组件中自定
 </script>
 ```
 
-## 深入了解组件
-
-
-
-# -插槽
-
-# 实例方法
-
-### vm.$emit
-
-`vm.$emit( eventName, […args] )`
-**触发当前实例上的事件，附加参数都会传给监听器回调**
-
-```html
-<body>
-    <div id='app'>
-        <welcome-button @welcome="sayHi"></welcome-button>
-    </div>
-</body>
-<script>
-
-    Vue.component('welcome-button', {
-        data(){
-              return {
-                  test:'hello world'
-              }
-        },
-        // TODO 暂时无法解决将data值传向标签中的函数
-        // template:"<button @click=\"$emit('welcome')\">click</button>",
-        // 通过模板函数加方法
-        template:`
-        <button @click="fun">click</button>
-        `,
-        methods:{
-            fun(){
-                this.$emit('welcome',this.test);
-            }
-        }
-    })
-    var app = new Vue({
-        el: '#app',
-        data: {
-            test: "2313213"
-        },
-        methods: {
-            sayHi: function (backdata = "hello") {
-                alert(backdata);
-            }
-
-        }
-    })
-```
-
 
 
 # Vue的生命周期
@@ -1208,6 +1155,15 @@ Vue实例在被创建时都要经过一系列的初始化过程
 
 **单页应用**(single page web application，**SPA**)，是在一个页面完成所有的业务功能，浏览器一开始会加载必需的HTML、CSS和JavaScript，之后所有的操作都在这张页面完成，这一切都由JavaScript来控制。
 
+**整个网站只有一个页面，内容的变化通过Ajax局部更新实现、同时支持浏览器地址栏的前进和后退操作**
+
+**基于URL地址的hash** (hash的变化会导致浏览器记录访问历史的变化、但是hash的变化不会触发新的URL请求)。
+
+在实现SPA过程中，最核心的技术点就是**前端路由**
+
+- 后端渲染(存在性能问题)
+- Ajax前端渲染（前端渲染提高性能，但是不支持浏览器的前进后退操作)
+
 - 优点
   - **操作体验流畅**
   - **完全的前端组件化**
@@ -1216,9 +1172,32 @@ Vue实例在被创建时都要经过一系列的初始化过程
   - **对搜索引擎不友好**
   - **学习难度相对较高**
 
-## [vue-router](https://cn.vuejs.org/v2/guide/routing.html)
+# 路由
 
-https://router.vuejs.org/zh/
+## 后端路由
+
+概念：**根据不同的用户URL请求，返回不同的内容**
+
+本质：URL**请求地址与服务器资源之间**的对应关系
+
+<img src="vue_image/image-20210129221404320.png" alt="image-20210129221404320" style="zoom:80%;" />
+
+## 前端路由
+
+概念：根据不同的用户事件，**显示不同的页面内容**
+
+本质：**用户事件与事件处理函数之间的对应关系**
+
+![image-20210129221442358](vue_image/image-20210129221442358.png)
+
+## [vue-router](https://router.vuejs.org/zh/)
+
+vue Router包含的功能有:
+
+- 支持HTML5历史模式或hash模式
+- 支持嵌套路由
+- 支持路由参数
+- 支持编程式路由支持命名路由
 
 ```html
 <body>
