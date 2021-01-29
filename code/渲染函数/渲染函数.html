@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../vue.js"></script>
+</head>
+
+<body>
+    <div id='app'>
+        {{test1}}
+    </div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            test1: 'test1',
+            test2: 'test2'
+        },
+        methods: {
+        },
+        // 通过函数渲染数据
+        render(createElement) {
+            return createElement('h1', this.test2);
+            // 返回createNodeDescription,包含Vue页面上需要渲染的节点及其子节点描述信息
+            // 又叫虚拟节点（virtual node） - VNode
+        }
+    })
+</script>
+
+</html>

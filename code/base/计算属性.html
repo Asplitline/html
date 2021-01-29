@@ -24,6 +24,7 @@
                 msg: 'hello world'
             },
             methods: {
+                // 每次调用都要重新计算
                 mymethod: function () {
                     let sum = 0;
                     console.log('mymethod');
@@ -32,6 +33,7 @@
                 }
             },
             computed: {
+                // 调用一次后，再次调用使用第一次调用的数据
                 computed: function () {
                     let sum = 0;
                     console.log('computed');

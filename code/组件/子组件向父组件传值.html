@@ -11,15 +11,20 @@
 <body>
     <div id="app">
         <span :style='{fontSize:size+"px"}'>测试</span>
-        <my-component @enlarge-text="handle"></my-component>
+        <my-component @enlarge-text="handle" :my-attr="test"></my-component>
+        <!-- 标签不区分大小写，传递属性不能用驼峰法 -->
     </div>
     <script src="../vue.js"></script>
     <script>
+        // 字符串中都可以, test-title 会被自动转为 testTitle
+        // template: '<div><third-com test-title="hello"></third-com></div>'
+        // template: '<div><third-com testTitle="hello"></third-com></div>'
         var vm = new Vue({
             el: '#app',
             data: {
                 msg: 'hello world',
                 size: 10,
+                test: '驼峰法测试'
             },
             methods: {
                 handle(val) {
@@ -31,11 +36,14 @@
                     data() {
                         return {}
                     },
+                    props: ['myAttr'],
+                    // 通过$emit 向父组件传递向事件名和参数
                     template: `
                         <div>
                             <button @click="$emit('enlarge-text',5)">plus5</button>
                             <button @click="$emit('enlarge-text',10)">plus10</button>
-                            </div>
+                                {{myAttr}}
+                        </div>
                     `,
                 }
             }

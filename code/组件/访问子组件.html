@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+</head>
+
+<body>
+    <div id='app'>
+        <base-input ref='child'>
+        </base-input>
+        <button @click="clickme">click</button>
+    </div>
+    <script src="../vue.js"></script>
+    <script>
+        // $refs 组件渲染后生效，非响应式，避免使用
+        Vue.component('base-input', {
+            template: `
+            <div>子组件</div>
+        `,
+            methods: {
+                test() {
+                    alert('子组件方法');
+                }
+            }
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                msg: 'hello world'
+            },
+            methods: {
+                clickme() {
+                    this.$refs.child.test();
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

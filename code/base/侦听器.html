@@ -16,6 +16,9 @@
     </div>
     <script src="../vue.js"></script>
     <script>
+        // 方法：调用一次计算一次
+        // 计算属性：第一次调用后缓存，当值变化再进行计算
+        // 侦听器：数据变化时执行异步或开销较大的操作
         var vm = new Vue({
             el: '#app',
             data: {

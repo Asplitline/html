@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../vue.js"></script>
+</head>
+
+<body>
+    <div id='app'>
+        <!-- 利用prop向子组件传数据，然后再利用emit获取子组件数据 -->
+        <son-sync :title="doc.title" @update:title="doc.title=$event">
+        <!-- 使用 .sync 效果同上 -->
+        <!-- <son-sync v-bind:title.sync="doc.title"> -->
+        <!-- 设置多个值 -->
+        <!-- <son-sync v-bind.sync="doc"> -->
+
+        </son-sync>
+        {{myTitle}}
+        {{myContent}}
+    </div>
+</body>
+<script>
+    Vue.component('son-sync', {
+        props: {
+            title: String,
+            content: String
+        },
+        template: `
+            <div>
+            <input type="text" :value="title" @input="onInput">
+            <input type="text" :value="content" @input="onContent">
+            </div>
+        `,
+        methods: {
+            onInput(event) {
+                this.$emit('update:title', event.target.value);
+            },
+            onContent(event) {
+                this.$emit('update:content', event.target.value);
+            }
+        }
+    })
+    var app = new Vue({
+        el: '#app',
+        data: {
+            doc: {
+                title: '',
+                content: ''
+            }
+        },
+        methods: {
+        },
+        computed: {
+            myTitle() {
+                return this.doc.title;
+            },
+            myContent() {
+                return this.doc.content;
+            }
+        }
+    })
+</script>
+
+</html>

@@ -16,6 +16,7 @@
     </div>
     <script src="../vue.js"></script>
     <script>
+        // 事件中心
         let hub = new Vue();
         Vue.component('a-component', {
             template: `
@@ -60,10 +61,10 @@
                 msg: 'hello world'
             },
             methods: {
-                handle() { 
+                handle() {
                     // hub.$off('funA');
                     // hub.$off('funB');
-                    hub.$off(['funA','funB']);
+                    hub.$off(['funA', 'funB']);
                 }
             }
         })

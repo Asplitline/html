@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../vue.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <base-input label="姓名" class="username-input" placeholder="Enter your username" data-date-picker="activated"
+            v-model="username">
+            {{username}}
+        </base-input>
+    </div>
+    <script>
+        Vue.component("base-input", {
+            inheritAttrs: false, //此处设置禁用继承特性,class,style不受影响
+            props: ["label", "value"],
+            template: `
+                <label>
+                {{ label }} --
+                <input
+                    v-bind="$attrs"
+                    v-bind:value="value"
+                    @input="$emit('input',$event.target.value)"
+                >
+                {{value}}
+                </label>
+            `,
+            mounted: function () {
+                console.log(this.$attrs);
+            }
+        });
+
+        vm = new Vue({
+            el: '#app',
+            data: {
+                username: ''
+            }
+        })
+    </script>
+</body>
+<!-- <script>
+
+    Vue.component('my-component', {
+        inheritAttrs: false,
+        // ...
+        props: ['label', 'value'],
+        template: `
+        <label>
+        {{label}}
+        <input 
+            v-bind="$attrs"
+            v-bind:value="value"
+            v-on:input="$emit('input',$event.target.value)"
+        >
+        </label>
+        `
+
+    })
+    var app = new Vue({
+        el: '#app',
+        data: {
+        },
+        methods: {
+        }
+    })
+</script> -->
+
+</html>

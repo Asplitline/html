@@ -10,6 +10,8 @@
 
 <body>
     <div id="app">
+        <!-- 未绑定属性，直接获取属性值
+             绑定属性，获得属性值名对应的数据 -->
         <my-component msg='father msg' :title-w='word'></my-component>
     </div>
     <script src="../vue.js"></script>
@@ -20,6 +22,7 @@
                     test: 'son msg'
                 }
             },
+            // 组件通过 props获取自定义属性
             props: ['msg', 'titleW'],
             template: '<div>{{msg+"-----"+ titleW}}</div>'
         })

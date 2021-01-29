@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../vue.js"></script>
+</head>
+
+<body>
+    <div id='app'>
+    </div>
+</body>
+<script>
+    // 组件对象和混入对象同名
+    // 1.数据对象
+    // 数据对象会合并，组件数据对象优先
+    var mixin = {
+        data() {
+            return {
+                message: 'hello',
+                content: 'world'
+            }
+        },
+        // 2.钩子函数
+        // 混入钩子 先于 组件钩子函数
+        created() {
+            console.log('混入对象钩子函数');
+        },
+        // 3.值为对象的选项-methods,components,directives
+        // 对象键名冲突，取组件
+        methods:{
+           fun(){
+               console.log('混入对象方法');
+           }  
+        }
+    }
+    new Vue({
+        mixins: [mixin],
+        data() {
+            return {
+                message: 'goodbye',
+                title: 'hihi'
+            }
+        },
+        created() {
+            console.log('组件钩子函数');
+            console.log(this.$data)
+        },
+        methods:{
+            fun(){
+                console.log('组件对象方法');
+            }
+        }
+    })
+
+</script>
+
+</html>

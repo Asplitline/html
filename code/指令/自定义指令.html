@@ -11,6 +11,7 @@
 <body>
     <div id="app">
         <input type="text" v-focus v-red v-color='yellow'>
+        <input type="text" name="" id="" v-demo:foo.a.b="message">
     </div>
     <script src="../vue.js"></script>
     <script>
@@ -20,6 +21,24 @@
             // 当绑定元素插入到DOM中。其中el为dom元素
             inserted: function (el) {
                 el.focus();
+            }
+        })
+        /**
+          el:指令所绑定的元素，直接用来操作DOM
+          binding:对象
+               name - 指令名   demo
+               value - 指令绑定值  hello
+               oldValue - 指令绑定的前一个值
+               expression - 字符串形式指令表达式   message
+               arg - 传给指令的参数    foo
+               modifiers - 包含修饰符的对象    {"a":true,"b":true}
+          vnode:虚拟节点
+          oldVnode:上一个虚拟节点
+         */
+        Vue.directive('demo', {
+            // 钩子函数：只调用一次，指令第一次绑定到元素调用
+            bind(el, binding, vnode) {
+                console.log(vnode);
             }
         })
         // 局部指令，需要定义在  directives 的选项

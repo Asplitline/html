@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../vue.js"></script>
+</head>
+
+<body>
+    <div id='app'>
+        <anchored-heading :level=1>h1</anchored-heading>
+        <anchored-heading :level=2>h2</anchored-heading>
+        <anchored-heading :level=3>h3</anchored-heading>
+        <anchored-heading :level=4>h4</anchored-heading>
+        <anchored-heading :level=5>h5</anchored-heading>
+    </div>
+</body>
+<script>
+    var getChildrenTextContent = function (children) {
+        return children.map(function (node) {
+            return node.children
+                ? getChildrenTextContent(node.children)
+                : node.text
+        }).join('')
+        // 不存在子节点，返回本节点文本，存在子节点，一直往下
+    }
+
+    Vue.component('anchored-heading', {
+        render: function (createElement) {
+            // 创建 kebab-case 风格的 ID
+            var headingId = getChildrenTextContent(this.$slots.default)
+                .toLowerCase()
+                .replace(/\W+/g, '-')// 连续非字母数字下划线 转为 -
+                .replace(/(^-|-$)/g, '')//去掉头尾 -
+            return createElement(
+                'h' + this.level,
+                [
+                    createElement('a', {
+                        attrs: { // 为a标签创建 name 和 href属性
+                            name: headingId,
+                            href: '#' + headingId
+                        }
+                    }, this.$slots.default)
+                ]
+            )
+            // <<h*><a href="#headingId" name="headingId"></a></h*>
+        },
+        props: {
+            level: {
+                type: Number,
+                required: true
+            }
+        }
+    })
+    new Vue({
+        el: '#app'
+    })
+</script>
+
+</html>

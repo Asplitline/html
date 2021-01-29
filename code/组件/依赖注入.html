@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+</head>
+
+<body>
+    <div id="app">
+        {{msg}}
+    </div>
+    <script src="../vue.js"></script>
+    <script>
+        // 孙级元素获取父级元素
+        // 1.$parent
+        // 2.依赖注入
+        var app = new Vue({
+            el: '#app',
+            data: {
+                title: '父元素'
+            },
+            // 子级组件
+            components: {
+                son: {
+                    data() {
+                        return {
+                            title: '子元素'
+                        }
+                    },
+                    template: `
+                    <div>
+                        {{title}}
+                        {{this.$parent.title}}
+                        <grand-son></grand-son>
+                    </div>
+                `,
+                    // 孙级组件
+                    components: {
+                        grandSon: {
+                            data() {
+                                return {
+                                    title: '孙元素'
+                                }
+                            },
+                            // 获取数据
+                            inject: ['message'],
+                            template: `
+                            <div>
+                            {{title}}
+                            {{this.$parent.$parent.title}}
+                            {{message}}
+                            </div>
+                        `
+                        },
+                    }
+
+                }
+            },
+            // 提供数据
+            provide: {
+                message: 'provided by father',
+            }
+        })
+    </script>
+</body>
+
+</html>

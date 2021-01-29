@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../vue.js"></script>
+    <script src="../vue-router.js"></script>
+</head>
+<body>
+    <div id='app'>
+        <!-- /传送数据 -->
+        <router-link to='/user/id/10/name/星形线'>click</router-link>
+        <router-view></router-view>
+    </div>
+</body>
+<script>
+
+    var router = new VueRouter({
+        routes:[
+            {
+                // 获取数据 - 变量名前加 :
+                path:'/user/id/:id/name/:name',
+                component:{
+                    mounted(){
+                        // router会为vue添加共有属性 $route
+                        console.log(this.$route.params.id);
+                    },
+                    template:'<p>----{{$route.params.id}}----{{$route.params.name}}</p>'
+                }
+            }
+        ]
+    })
+    var app = new Vue({
+        el:'#app',
+        data:{},
+        router
+    })
+</script>
+</html>

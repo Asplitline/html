@@ -17,6 +17,12 @@
     </div>
     <script src="../vue.js"></script>
     <script>
+        // 组件就是是实例对象
+        // new Vue组件和自定义组件差异
+        // - 自定义组件没有el
+        // - 自定义组件data是一个方法,用返回值保存数据
+
+        // 全局组件 - > 第一参数是组件名字,第二参数是对象
         Vue.component('my-component', {
             data: function () {
                 return {};
@@ -26,6 +32,7 @@
         var vm = new Vue({
             el: '#app',
             components: {
+                // 局部组件 -> 属性的名字就是组件名字，只能在父组件中使用
                 'myComponent1': '<div>456</div>'
             }
         })

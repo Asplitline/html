@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../vue.js"></script>
+</head>
+
+<body>
+    <div id='app'>
+        {{msg}} <br>
+        <button @click='update'>更新</button>
+        <button @click="destroy">销毁</button>
+    </div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            msg: '生命周期',
+        },
+        methods: {
+            update() {
+                this.msg = '生命周期test';
+            },
+            destroy() {
+                this.$destroy();
+            }
+        },
+        beforeCreate() {
+            console.log('实例初始化之后');
+        },
+        created() {
+            console.log('实例创建完成之后立即调用');
+        },
+        beforeMount() {
+            console.log('渲染虚拟DOM之前');
+        },
+        mounted() {
+            console.log('渲染完毕');
+        },
+        beforeUpdate() {
+            console.log('数据更新时调用');
+        },
+        updated() {
+            console.log('数据更改导致虚拟DOM重新渲染');
+        },
+        beforeDestroy() {
+            console.log('实例销毁前,实例仍可用');
+        },
+        destroyed() {
+            console.log('实例销毁后调用');
+        }
+    });
+</script>
+
+</html>

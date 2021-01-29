@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../vue.js"></script>
+    <script src="../vue-router.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <!-- 利用锚点实现路由 -->
+        <!-- 1.常规写法 -->
+        <ul>
+            <li><a href="#/reg">注册</a></li>
+        </ul>
+        <ul>
+            <li><a href="#/log">登录</a></li>
+        </ul>
+        <!-- 2.router-link写法 -->
+        <ul>
+            <!-- router-link 解析为a标签后,点击会自动添加class属性 -->
+            <li>
+                <router-link to='/index'>主页</router-link>
+            </li>
+        </ul>
+        <!-- 路由中组件会替换router-view -->
+        <router-view></router-view>
+    </div>
+</body>
+<script>
+    // 获取路由对象
+    var rt = new VueRouter({
+        //  notes -  routes
+        // 定义路由规则
+        routes: [
+            // path - 匹配地址栏路由变化
+            // component - 组件展示
+            { path: '/reg', component: { template: "<p>register</p>" } },
+            { path: '/log', component: { template: "<p>login</p>" } },
+            { path: '/index', component: { template: "<p>hello</p>" } },
+        ]
+    })
+    var app = new Vue({
+        el: '#app',
+        data: {},
+        router: rt // 引入路由对象
+    })
+</script>
+
+</html>

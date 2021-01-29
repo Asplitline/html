@@ -9,8 +9,11 @@
 </head>
 
 <body>
+
     <div id="app">
+        <!-- 让 list 在父级的插槽内容中可用 -->
         <my-component :list="list">
+            <!-- 使用带值的 v-slot 来定义我们提供的插槽 prop 的名字 -->
             <template v-slot:default="slotProps">
                 <!-- <template v-slot="slotProps"> -->
                 {{slotProps.info.name}}
@@ -28,6 +31,7 @@
                   </li>  
                 </ul>
             `,
+            // 绑定在 <slot> 元素上的 attribute 被称为插槽 prop
         })
         var vm = new Vue({
             el: '#app',

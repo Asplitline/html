@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../vue.js"></script>
+</head>
+
+<body>
+    <div id='app'>
+        <base-input label="test" v-on:change.native="onFocus" v-model='vl'></base-input>
+        <!-- 组件根元素 label，onFocus 失效 -->
+        <!-- 1  .native 只能绑定在根元素 -->
+        <!-- 2  绑定到非根元素，用listeners -->
+    </div>
+</body>
+<script>
+    Vue.component('base-input', {
+        props: ["label", "value"],
+        template: `
+        <label>
+            {{label}}
+                <input 
+                v-bind="$attrs"
+                v-bind:value="value"
+                v-on="inputListeners">
+            {{value}}
+        </label>
+        `,
+        computed: {
+            inputListeners() {
+                var vm = this;
+                return Object.assign({},
+                    this.$listeners,
+                    {
+                        input(event) {
+                            vm.$emit('input', event.target.value);
+                        }
+                    }
+                )
+            }
+        }
+    })
+    var app = new Vue({
+        el: '#app',
+        data: {
+            vl: ''
+        },
+        methods: {
+            onFocus() {
+                alert(123);
+            }
+        }
+    })
+</script>
+
+</html>
