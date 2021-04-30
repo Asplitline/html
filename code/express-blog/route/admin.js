@@ -6,6 +6,7 @@ const userRoute = require('./admin/userPage');
 const articleRoute = require('./admin/articlePage');
 // 登录
 admin.get('/login', loginRoute.getList);
+admin.get('/loginOut', loginRoute.getLoginOut);
 admin.post('/login', loginRoute.postLogin);
 // 用户
 admin.get('/user', userRoute.getList);

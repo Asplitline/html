@@ -37,19 +37,18 @@ app.use('/admin', require('./middleware/loginGuard'));
 // 引入路由模块
 app.use('/home', require('./route/home'));
 app.use('/admin', require('./route/admin'));
-
 app.locals.root = __dirname;
 // 错误拦截
 app.use((err, req, res, next) => {
     console.log(err, '---------');
-    let result = JSON.parse(err);
-    let params = [];
-    for (const attr in result) {
-        if (attr != 'path') {
-            params.push(attr + '=' + result[attr]);
-        }
-    }
-    res.redirect(`${result.path}?${params.join("&&")}`);
+    // let result = JSON.parse(err);
+    // let params = [];
+    // for (const attr in result) {
+    //     if (attr != 'path') {
+    //         params.push(attr + '=' + result[attr]);
+    //     }
+    // }
+    // res.redirect(`${result.path}?${params.join("&&")}`);
 })
 app.listen(3333, () => {
     console.log("http://localhost:3333");

@@ -4,6 +4,12 @@ module.exports = {
     getList: (req, res) => {
         res.render('admin/login');
     },
+    getLoginOut: (req, res) => {
+        res.clearCookie('connect.sid');
+        res.redirect('/admin/login');
+        req.app.locals.userInfo = null;
+        req.app.locals.currentMenu = null;
+    },
     postLogin: async (req, res) => {
         const { email, password } = req.body;
         if (email.trim().length == 0 || password.trim().length == 0) {
@@ -25,5 +31,5 @@ module.exports = {
         } else {
             return res.render('admin/login', { msg: '用户不存在' });
         }
-    }
+    },
 }

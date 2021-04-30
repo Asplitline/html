@@ -1,9 +1,9 @@
 const express = require('express');
 const home = express.Router();
-const home_root = './home/';
 
+const indexRoute = require('./home/defaultPage');
 // 文章列表
-home.get('/', require(home_root + 'default'));
-home.get('/article', require(home_root + 'article'));
-
+home.get('/', indexRoute.index);
+home.get('/article', indexRoute.article);
+home.post('/comment', indexRoute.comment);
 module.exports = home;

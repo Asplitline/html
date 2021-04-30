@@ -3,7 +3,6 @@
     "db": {
         "host": "localhost",
         "user": "blog",
-        "pwd": "123456",
         "port": "27017",
         "dbname": "blog"
     }
