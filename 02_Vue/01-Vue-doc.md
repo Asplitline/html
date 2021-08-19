@@ -1,4 +1,6 @@
-# ques why
+[TOC]
+
+
 
 # 基础
 
@@ -1314,325 +1316,590 @@ Vue.component('hello-world', {
 
 # 过渡 & 动画
 
-# API
+## 单元素/组件过度
 
-## 全局配置
+ `transition` ：在下列情形中，可以给任何元素和组件添加进入/离开过渡
 
-`Vue.config`对象，包含全局配置
+- 条件渲染 (使用 `v-if`)
+- 条件展示 (使用 `v-show`)
+- 动态组件
+- 组件根节点
 
-### silent 
+`transition`会对里面元素做以下处理
 
-取消所有日志与警告
+- 自动嗅探目标元素是否应用了 CSS 过渡或动画
+- 过渡组件提供了 [JavaScript 钩子函数](https://cn.vuejs.org/v2/guide/transitions.html#JavaScript-钩子)，这些钩子函数将在恰当的时机被调用
+- 没有找到 JavaScript 钩子并且也没有检测到 CSS 过渡/动画，DOM 操作 (插入/删除) 在下一帧中立即执行
 
-type：`boolean` 
+`<transition name="my-transition">`，那么 `v-enter` 会替换为 `my-transition-enter`
 
-default：`false`
+### 过渡的类名
 
-### keyCodes
+<img src="https://cn.vuejs.org/images/transition.png" alt="过渡" style="zoom: 50%;" />
 
- `v-on` 自定义键
+*六个class*
 
-type：`{ [key:string]:number| Array<number>}`
+`*-active`：过渡过程，`*-enter`,`*-leave`：过渡前后
 
-default：`{}`
+- `v-enter`：进入过渡开始状态
+  - 生效：插入之前
+  - 移除：插入之后下一帧
+- `v-enter-active`：进入过渡生效状态
+  - 生效：插入之前
+  - 移除：过渡/动画完成之后
+  - 定义进入过渡的过程时间，延迟和曲线函数
+- `v-enter-to` *2.1.8+*：进入过渡结束状态
+  - 生效：插入之后下一帧（*v-enter移除*）
+  - 移除：过渡/动画完成之后
+- `v-leave`：离开过渡开始状态
+  - 生效：离开触发
+  - 移除：离开触发下一帧
+- `v-leave-active`：离开过渡生效状态
+  - 生效：离开触发
+  - 移除：过渡/动画完成之后
+  - 定义进入过渡的过程时间，延迟和曲线函数
+- `v-leave-to` *2.1.8+*：离开过渡结束状态
+  - 生效：离开触发下一帧（*v-leave移除*）
+  - 移除：过渡/动画完成之后
 
-## 全局API
+### 自定义过渡切换类名
 
-## 选项
+*优先级高于普通的类名*
 
-### 数据
+- `enter-class`
+- `enter-active-class`
+- `enter-to-class` (2.1.8+)
+- `leave-class`
+- `leave-active-class`
+- `leave-to-class` (2.1.8+)
 
-### DOM
+### css过渡和css动画
+
+动画中 `v-enter` 类名在节点插入 DOM 后不会立即删除，而是在 `animationend` 事件触发时删除。
+
+### 同时使用动画和过渡
+
+Vue设置相应的事件来监听过渡的完成状态。
+
+`transitionend` 或 `animationend`，取决于元素 CSS 规则。只使用*一种*，Vue会*自动识别类型并设置监听*
+
+同时使用，需要在 `type` attribute 并设置 `animation` 或 `transition` 来明确声明你需要 Vue 监听的类型。
+
+### 显性的过渡持续时间  
+
+Vue 自动得出过渡效果的完成时机。默认情况下，Vue 会等待其在过渡效果的根元素的第一个 `transitionend` 或 `animationend` 事件。
+
+ `<transition>` 组件上的 `duration` prop *自定义*显性的*过渡持续时间* (*ms*)
+
+```js
+<transition :duration="{ enter: 500, leave: 800 }">...</transition>
+```
+
+### JavaScript 钩子
+
+```js
+<transition
+  v-on:before-enter="beforeEnter"
+  v-on:enter="enter"
+  v-on:after-enter="afterEnter"
+  v-on:enter-cancelled="enterCancelled"
+
+  v-on:before-leave="beforeLeave"
+  v-on:leave="leave"
+  v-on:after-leave="afterLeave"
+  v-on:leave-cancelled="leaveCancelled"
+>
+  <!-- ... -->
+</transition>
+```
+
+第一参数：`dom元素`
+
+第二参数：`done`回调
+
+```js
+methods: {
+  // 进入中
+  beforeEnter: function (el) {
+    // ...
+  },
+  // 当与 CSS 结合使用时,回调函数 done 是可选的
+  enter: function (el, done) {
+    // ...
+    done()
+  },
+  afterEnter: function (el) {
+    // ...
+  },
+  enterCancelled: function (el) {
+    // ...
+  },
+
+  // 离开时
+  beforeLeave: function (el) {
+    // ...
+  },
+  // 当与 CSS 结合使用时,回调函数 done 是可选的
+  leave: function (el, done) {
+    // ...
+    done()
+  },
+  afterLeave: function (el) {
+    // ...
+  },
+  // leaveCancelled 只用于 v-show 中
+  leaveCancelled: function (el) {
+    // ...
+  }
+}
+```
+
+>只用 JavaScript 过渡的时候，**在 `enter` 和 `leave` 中必须使用 `done` 进行回调**。
+>
+>否则，它们将被*同步调用**，过渡会立即完成*。
+
+> 仅有 JavaScript 过渡的元素添加 `v-bind:css="false"`
+>
+> Vue 会跳过 CSS 的检测，可避免过渡中 CSS 的影响
+
+# 可复用性&组合
+
+## 混入
+
+```js
+// 定义一个混入对象
+var myMixin = {
+  created() {
+    // ...
+  },
+  methods: {
+    hello() {
+      // ...
+    }
+  }
+}
+
+// 定义一个使用混入对象的组件
+var Component = Vue.extend({
+  mixins: [myMixin]
+})
+
+var component = new Component() // => "hello from mixin!"
+```
+
+### 选项合并
+
+**数据对象**：在内部进行递归合并，同名以*组件数据优先*
+
+**钩子函数**：将合并为数组，都被调用，*混子钩子先于组件钩子*
+
+**值为对象的选项**：（`methods`、`components` 、`directives`）合并为同一个对象，对象键名冲突，*取组件对象键值对*
+
+> `Vue.extend()`使用同样策略合并
+
+### 全局混入
+
+一旦使用全局混入，它将影响**每一个**之后创建的 Vue 实例，可以用来*为自定义选项注入处理逻辑*
+
+```js
+// 为自定义的选项 'myOption' 注入一个处理器。
+Vue.mixin({
+  created: function () {
+    var myOption = this.$options.myOption
+    if (myOption) {
+      console.log(myOption)
+    }
+  }
+})
+
+new Vue({
+  myOption: 'hello!'
+})
+// => "hello!"
+```
+
+### 自定义选项合并策略
+
+自定义选项*将使用默认策略*，即*简单地覆盖已有值*。
+
+如果想让自定义选项以自定义逻辑合并，可以向 `Vue.config.optionMergeStrategies` 添加一个函数
+
+```js
+Vue.config.optionMergeStrategies.myOption = function (toVal, fromVal) {
+  // 返回合并后的值
+}
+```
+
+## 自定义指令
+
+*代码复用和抽象*的主要形式是*组件*，有时，需要对普通 *DOM 元素进行底层操作*
+
+### 指令
+
+**全局指令**
+
+```js
+// 注册一个全局自定义指令 `v-focus`
+Vue.directive('focus', {
+  // 当被绑定的元素插入到 DOM 中时……
+  inserted: function (el) {
+    // 聚焦元素
+    el.focus()
+  }
+})
+```
+
+**局部指令**：接受一个 `directives` 的选项
+
+```js
+directives: {
+  focus: {
+    // 指令的定义
+    inserted: function (el) {
+      el.focus()
+    }
+  }
+}
+```
+
+**使用**
+
+```html
+<input v-focus>
+```
 
 ### 钩子函数
 
-### 资源
+`bind`：指令*第一次绑定*到元素时调用（*一次性*）。可以进行初始化设置
 
-### 组合
+`inserted`：被绑定元素插入父节点时调用。（*仅保证父节点存在，不保证已被插入文档*）
 
-### 其他
+`update`：所有组件 VNode更新时调用（*有可能发生在子VNode更新之前*）
 
-## 实例
+`componentUpdated`：组件VNode及子VNode*全部更新后*调用
 
-### property
+`unbind`：指令与元素*解绑时*调用（一次性）
 
-### 方法
+### 钩子函数参数
 
-### 数据
+- `el`：指令所绑定的元素，可以用来*直接操作 DOM*。
+- `binding`：一个对象，包含以下 property：
+  - `name`：指令名，不包括 `v-` 前缀。
+  - `value`：指令的绑定值。
+  - `oldValue`：指令绑定的前一个值，仅在 `update` 和 `componentUpdated` 钩子中可用。无论值是否改变都可用。
+  - `expression`：字符串形式的指令表达式。
+  - `arg`：传给指令的参数，可选。
+  - `modifiers`：一个包含修饰符的对象。
+- `vnode`：Vue 编译生成的虚拟节点。移步 [VNode API](https://cn.vuejs.org/v2/api/#VNode-接口) 来了解更多详情。
+- `oldVnode`：上一个虚拟节点，仅在 `update` 和 `componentUpdated` 钩子中可用。
 
-##### vm.$watch
-
-`vm.$watch( expOrFn, callback, [options] )`
-
-- {string | Function}  `expOrFn`
--  {Function | Object}  `callback`
-- {Object} - `[options]`
-  - {boolean} `deep` - 监听内部值变化，数组可以不用（**deep:true**）
-  - {boolean} `immediate` - 立即触发回调（**immediate:true**）
-
-返回值：{Function} `unwatch`
-
-观察Vue实例上一个表达式或者函数**计算结果的变化**
+```html
+<div id="hook-arguments-example" v-demo:foo.a.b="message"></div>
+```
 
 ```js
-var unwatch = vm.$watch('a', cb)
-unwatch() // 取消观察
+// name  - demo
+// value - hello!
+// expression - message
+// arg - foo
+// modifiers - {"a":true,"b":true}
+new Vue({
+  el: '#hook-arguments-example',
+  data: {
+    message: 'hello!'
+  }
+})
 ```
 
-> **注意**：
+> 除了 `el` 之外，其它参数*都应该是只读的*，切勿进行修改。
 >
-> 1. 在变更数组或对象时，旧值和新值指向同一对象和数组，**不会保留之前版本**
-> 2. 第一次回调中不能通过`unwatch`取消，因为`unwatch`不存在
+> 需要在钩子之间共享数据，建议通过元素的 [`dataset`](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLElement/dataset) 来进行。
 
-##### vm.$set
+**动态参数指令**：指令的参数可以是动态的。
 
-`vm.$set( target, propertyName/index, value )`
+ `v-mydirective:[argument]="value"` 中，`argument` 参数可以根据组件实例数据进行更新
 
-- {Object | Array} `target`
-- {string | number} `propertyName/index`
-- {any} `value`
+**函数简写**：在`bind`和`update`触发相同行为，不关心其他钩子
 
-返回值：**设置的值**
-
-确保对象中`property`为响应式
-
-> **注意**：对象不能是 Vue 实例，或者 Vue 实例的根数据对象
-
-##### vm.$delete
-
-`vm.$delete( target, propertyName/index)`
-
-- {Object | Array}  `target`
-- {string | number}   `propertyName/index`
-
-删除对象的 property，用于避开 Vue `不能检测到 property 被删除`的限制
-
-### 事件
-
-#### vm.$on
-
-`vm.$on( event, callback )`
-
-- { string | Array\<string> } `event` (2.2.0+ 支持数组)
-- { Function } `callback`
-
-**监听**实例自定义事件，通过`$emit`触发
-
-#### vm.$once
-
-`vm.$once(event, callback)`
-
-- {string} `event`
-- {Function} `callback`
-
-**监听**自定义事件，触发（一次）之后，**监听器销毁**
-
-#### vm.$off
-
-`vm.$off([event, callback])`
-
-- {string | Array\<string>} `event` (2.2.2+ 支持数组)
-- {Function} `[callback]`
-
-**移除**自定义事件监听器。
-
-- 无参数，移除**所有**事件监听器
-- 事件，移除**该事件**所有监听器
-- 事件+回调，移除**该回调**监听器
-
-#### vm.$emit
-
-`vm.$emit(eventName, [...args])`
-
-- {string} `eventName`
-- `[...args]`
-
-**触发**当前实例事件。附加参数传给监听器。
-
-### 生命周期
-
-## 指令
-
-### v-bind
-
-缩写：`:`
-
-预期：`any | Object`
-
-参数：`attrOrProp`
-
-修饰符：
-
-- `.prop` - 作为DOM property 绑定（默认attribute）
-- `.camel` - (2.1.0+) 将 kebab-case attribute 名转换为 camelCase
-- `.sync` (2.3.0+) 语法糖，会扩展成一个更新父组件绑定值的 `v-on` 侦听器
-
-```html
-<!-- 动态 attribute 名 (2.6.0+) -->
-<button v-bind:[key]="value"></button>
-<!-- 动态 attribute 名缩写 (2.6.0+) -->
-<button :[key]="value"></button>
-<!-- 内联字符串拼接 -->
-<img :src="'/path/to/images/' + fileName">
-<!-- class 绑定 -->
-<div :class="{ red: isRed }"></div>
-<div :class="[classA, classB]"></div>
-<div :class="[classA, { classB: isB, classC: isC }]">
-<!-- style 绑定 -->
-<div :style="{ fontSize: size + 'px' }"></div>
-<div :style="[styleObjectA, styleObjectB]"></div>
-<!-- 绑定一个全是 attribute 的对象 -->
-<div v-bind="{ id: someProp, 'other-attr': otherProp }"></div>
-<!-- 通过 prop 修饰符绑定 DOM attribute -->
-<div v-bind:text-content.prop="text"></div>
-<!-- ????? prop 绑定。“prop”必须在 my-component 中声明。-->
-<my-component :prop="someThing"></my-component>
-<!-- 通过 $props 将父组件的 props 一起传给子组件 -->
-<child-component v-bind="$props"></child-component>
-<!-- XLink -->
-<svg><a :xlink:special="foo"></a></svg>
+```js
+Vue.directive('color-swatch', function (el, binding) {
+  el.style.backgroundColor = binding.value
+})
 ```
 
-## 特殊attribute
+**对象字面量**：指令需要多个值，传入Js对象字面量
 
-### key
-
-类型 `number | string | boolean(2.4.0) | symbol (2.5.12)`
-
-主要用于 **Vue虚拟DOM算法**，新旧nodes对比时**辨识VNodes**
-
-- 不使用key， Vue使用最大限度**减少动态元素**且尽可能尝试**修改/复用相同元素**
-- 使用key，**基于key**变化**重新排列**元素顺序，**移除key值不在元素**
-
-应用：
-
-可以用于**强制替换元素/组件**，**而不是重复利用**。
-
-- 完整触发生命周期钩子函数
-- 因为元素会被替换而不是修改，触发过度
-
-### ref
-
-类型 `string`
-
-`ref`：元素或子组件**注册引用信息**
-
-`$ref`：**引用信息**注册在`$refs`上
-
-`ref`**作为渲染结果**被创建，初始渲染时不能访问，`$refs`**不是响应式**，**不要试图**用它在模板中做**数据绑定**
-
-```html
-<!-- `vm.$refs.p` will be the DOM node -->
-<p ref="p">hello</p>
-
-<!-- `vm.$refs.child` will be the child component instance -->
-<child-component ref="child"></child-component>
+```js
+<div v-demo="{ color: 'white', text: 'hello!' }"></div>
 ```
 
-> `v-for`  引用信息将是数组
+## 渲染函数 & JSX
 
-### is
-
-`string | Object(组件的选项对象)`
-
-用于**动态组件**且基于 **DOM 内模板的限制**来工作
-
-[动态组件](#动态组件)
-
-## 内置组件
-
-## VNode接口
-
-## 服务器端渲染
-
-# 风格指南
-
-## A - 必要的
-
-### 组件名为多个单词
-
-**避免**跟现有的以及未来的 HTML **元素相冲突**
-
-`todo` -  `todo-item or todoItem`
-
-### 组件数据
-
-组件中使用**data** ，值必须**返回函数对象**
-
-如果不如此，每个组件实例都**引用相同对象**，它会导致所有实例间**共享数据**
-
-### prop定义
-
-**prop**定义应该**尽量详解**，**指定其类型**
-
-- 代码易懂
-- 易知错误来源
-
-### v-for 设置 key
-
-用`key`配合`v-for`，便于维护内部组件及其子树的状态
-
-**Vue** 会使用一种**最大限度减少动态元素**并且尽可能的尝试就地修改/复用相同类型元素的算法
-
-使用key后，会基于key变化**重新排列元素**
-
-[refs](https://blog.csdn.net/weixin_41736818/article/details/107372595)
-
-### 避免 v-if 和 v-for
-
-不要让 `v-for` 和 `v-if` 同时使用在**同一元素**
-
-因为`v-for`优先级高于`v-if`，只渲染部分用户，也会遍历整个列表
-
-解决：
-
-- 通过**computed过滤值**，代替`v-if`
-  - 只遍历过滤列表，带**缓存**
-  - **解耦**渲染层逻辑
-- `v-if`写在**上层**
-
-### 组件样式设置作用域
-
-顶级 `App` 组件和布局组件中的**样式可以是全局**，但是其它**组件都应该**是**有作用域**
-
-设置**一致作用域**会确保样式只会运用在它们**想要作用的组件上**
-
-两种方式
-
-- `scoped attribute`
-- [CSS Modules](https://vue-loader.vuejs.org/zh-cn/features/css-modules.html)
-- [BEM](http://getbem.com/)
+### 动态标题
 
 ```html
-<!-- 使用 `scoped` attribute -->
-<style scoped></style>
-<!-- 使用 CSS Modules -->
-<style module></style>
-<!-- 使用 BEM 约定 -->
-<style>
-.c-Button--close {}
-</style>
+<anchored-heading :level="1">Hello world!</anchored-heading>
 ```
 
-### 私有property名
+#### template方式
 
-**使用模块作用域保持**不允许外部访问的函数的**私有性**
+```html
+<script type="text/x-template" id="anchored-heading-template">
+  <h1 v-if="level === 1">
+    <slot></slot>
+  </h1>
+  ...
+  <h6 v-else-if="level === 6">
+    <slot></slot>
+  </h6>
+</script>
+```
 
-`_` ：Vue`私有property`
+#### render函数方式
 
-`$`：Vue`特殊实例 property`
+```js
+Vue.component('anchored-heading', {
+  render: function (createElement) {
+    return createElement(
+      'h' + this.level,   // 标签名称
+      this.$slots.default // 子节点数组
+    )
+  },
+  props: {
+    level: {
+      type: Number,
+      required: true
+    }
+  }
+})
+```
 
-使用 `$_`避免冲突，作为`用户自定义property`，附带命名空间以回避和其它作者的冲突
+### 节点、树以及虚拟 DOM
 
- (比如 `$_yourPluginName_`)
+每个元素都是一个节点。每段文字也是一个节点。甚至注释也都是节点。一个节点就是页面的一个部分。
 
-## B - 强烈推荐
+```html
+<div>
+  <h1>My title</h1>
+  Some text content
+  <!-- TODO: Add tagline -->
+</div>
+```
 
-## C - 推荐
+<img src="https://cn.vuejs.org/images/dom-tree.png" style="zoom: 50%;" />
 
-## D - 谨慎使用
+### 虚拟DOM
+
+Vue 通过建立一个**虚拟 DOM** 来追踪自己要如何改变真实 DOM。
+
+```js
+return createElement('h1', this.blogTitle)
+```
+
+`createElement`：不是一个*实际的* DOM 元素，而是返回`createNodeDescription`，页面上需要渲染什么样的节点，包括及其子节点的描述信息。又叫**虚拟节点**
+
+### createElement参数
+
+```js
+// @returns {VNode}
+createElement(
+  // {String | Object | Function}  必填项
+  // 一个 HTML 标签名、组件选项对象，或者
+  // resolve 了上述任何一种的一个 async 函数。
+  'div',
+
+  // {Object} 可选
+  // 一个与模板中 attribute 对应的数据对象。
+  {
+    // (详情见下一节)
+  },
+
+  // {String | Array} 可选
+  // 子级虚拟节点 (VNodes)，由 `createElement()` 构建而成，
+  // 也可以使用字符串来生成“文本虚拟节点”。
+  [
+    '先写一些文字',
+    createElement('h1', '一则头条'),
+    createElement(MyComponent, {
+      props: {
+        someProp: 'foobar'
+      }
+    })
+  ]
+)
+```
+
+#### 数据对象
+
+```js
+{
+  // 与 `v-bind:class` 的 API 相同，
+  // 接受一个字符串、对象或字符串和对象组成的数组
+  'class': {
+    foo: true,
+    bar: false
+  },
+  // 与 `v-bind:style` 的 API 相同，
+  // 接受一个字符串、对象，或对象组成的数组
+  style: {
+    color: 'red',
+    fontSize: '14px'
+  },
+  // 普通的 HTML attribute
+  attrs: {
+    id: 'foo'
+  },
+  // 组件 prop
+  props: {
+    myProp: 'bar'
+  },
+  // DOM property
+  domProps: {
+    innerHTML: 'baz'
+  },
+  // 事件监听器在 `on` 内，
+  // 但不再支持如 `v-on:keyup.enter` 这样的修饰器。
+  // 需要在处理函数中手动检查 keyCode。
+  on: {
+    click: this.clickHandler
+  },
+  // 仅用于组件，用于监听原生事件，而不是组件内部使用
+  // `vm.$emit` 触发的事件。
+  nativeOn: {
+    click: this.nativeClickHandler
+  },
+  // 自定义指令。注意，你无法对 `binding` 中的 `oldValue`
+  // 赋值，因为 Vue 已经自动为你进行了同步。
+  directives: [
+    {
+      name: 'my-custom-directive',
+      value: '2',
+      expression: '1 + 1',
+      arg: 'foo',
+      modifiers: {
+        bar: true
+      }
+    }
+  ],
+  // 作用域插槽的格式为
+  // { name: props => VNode | Array<VNode> }
+  scopedSlots: {
+    default: props => createElement('span', props.text)
+  },
+  // 如果组件是其它组件的子组件，需为插槽指定名称
+  slot: 'name-of-slot',
+  // 其它特殊顶层 property
+  key: 'myKey',
+  ref: 'myRef',
+  // 如果你在渲染函数中给多个元素都应用了相同的 ref 名，
+  // 那么 `$refs.myRef` 会变成一个数组。
+  refInFor: true
+}
+```
 
 
+
+## 插件
+
+**用途**
+
+- 全局方法 或 property
+- 全局资源：指令、过滤器、过渡
+- 全局混入
+- Vue实例方法，`Vue.prototype`
+- 提供自己API
+
+```js
+MyPlugin.install = function (Vue, options) {
+  // 1. 添加全局方法或 property
+  Vue.myGlobalMethod = function () {
+    // 逻辑...
+  }
+
+  // 2. 添加全局资源
+  Vue.directive('my-directive', {
+    bind (el, binding, vnode, oldVnode) {
+      // 逻辑...
+    }
+    ...
+  })
+
+  // 3. 注入组件选项
+  Vue.mixin({
+    created: function () {
+      // 逻辑...
+    }
+    ...
+  })
+
+  // 4. 添加实例方法
+  Vue.prototype.$myMethod = function (methodOptions) {
+    // 逻辑...
+  }
+}
+```
+
+**使用**
+
+全局方法 `Vue.use()`，需要在`new Vue()`之前调用
+
+- 可传入可选选项对象
+
+```js
+Vue.use(MyPlugin, { someOption: true })
+```
+
+- `Vue.user()`阻止多次注册相同插件
+
+
+
+## 过滤器
+
+用于常见文本格式化。
+
+**使用场景**：*双花括号插值*和 *`v-bind` 表达式*（*2.1.0+*）
+
+```html
+<!-- 在双花括号中 -->
+{{ message | capitalize }}
+
+<!-- 在 `v-bind` 中 -->
+<div v-bind:id="rawId | formatId"></div>
+```
+
+**全局过滤器**
+
+```js
+Vue.filter('capitalize', function (value) {
+  return ...
+})
+```
+
+**局部过滤器**
+
+```js
+filters: {
+  capitalize(value) {
+    return ...
+  }
+}
+```
+
+全局和局部*同名*，*采用局部*
+
+过滤器函数接收*表达式的值为第一个参数*。
+
+过滤器可以*串联*
+
+```js
+{{ message | filterA | filterB }}
+```
+
+过滤器是Javascript函数，也可*接收多个参数*
+
+```js
+{{ message | filterA('arg1', arg2) }}
+```
 
 
 
@@ -1740,6 +2007,4 @@ console.log(inputDom.type) // password
  [DOM 模板解析说明](https://cn.vuejs.org/v2/guide/components.html#解析-DOM-模板时的注意事项) 
 
 https://cn.vuejs.org/v2/api/#devtools)
-
-# https://cn.vuejs.org/v2/guide/components-registration.html
 

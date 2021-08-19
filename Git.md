@@ -56,6 +56,7 @@ git checkout 文件
 # 工作目录中文件还存在
 git rm --cached 文件
 
+git rm -r --cached .  # 删除缓存文件，不会删除物理文件
 # 将git仓库中指定的更新记录恢复出来，并且覆盖暂存区和工作目录
 # 版本回退 git log 查看commitID -> 注意版本从高到低
 git reset --hard commitID
@@ -96,7 +97,6 @@ git 命令 --help #详细
  ```shell
 # 查看分支
 git branch 
-
 # 创建分支
 git branch 分支名称
 
@@ -107,9 +107,6 @@ git branch -m new # 当前分支改名
 # 切换分支
 git checkout 分支名称
 
-# 合并分支
-git merge 来源分支 
-
 # 删除分支（分支被合并后才允许删除） 强制删除
 git branch -d 分支名称
 
@@ -119,7 +116,88 @@ git branch -v # 显示分支提交信息
 git checkout -b dev origin/dev
  ```
 
-### 暂时保存
+## merge
+
+`git merge`：合并两个分支时会产生一个特殊的提交记录，它有两个父节点
+
+## rebase
+
+`git rebase`：取出一系列的提交记录，“复制”它们，然后在另外一个地方逐个的放下去
+
+
+
+## fetch
+
+`git fetch`
+
+- 远程下载本地缺失记录
+- 更新远程分支指针
+
+> 不会更改本地仓库状态
+
+## pull
+
+`git pull`：从远程仓库获取更新并合并到本地
+
+`fetch` 和 `merge` 的缩写
+
+`fetch`更新远程状态，`merge`最新状态和本地合并
+
+## push
+
+`git push` ： 将本地变更上传
+
+> 不带参数，与`push.default`有关
+
+## 偏易提交
+
+远程提交一次记录，本地提交一次记录
+
+合并两次记录，本地记录为最新
+
+### rebase
+
+```shell
+git fetch
+git rebase xx
+git push
+# 简写
+git pull --rebase
+git push
+```
+
+### merge
+
+```shell
+git fetch
+git merge xx
+git push
+# 简写
+git pull
+git push
+```
+
+## 锁定的main
+
+`remote rejected`：! [远程服务器拒绝] main -> main (TF402455: 不允许推送(push)这个分支; 你必须使用pull request来更新这个分支.)
+
+**原因**：因为策略配置要求 `pull requests` 来提交更新，远程服务器**拒绝**直接推送(`push`)提交到`main`,
+
+**解决**
+
+```shell
+git checkout -b xx # 新建分支
+git push # 推送分支
+git checkout main
+git reset --hard o/main # 回滚
+git checkout xx
+```
+
+
+
+
+
+## 暂时保存
 
 暂时提取分支上所有的改动并存储，让开发人员得到一个干净的工作副本，临时转向其他工作。
 
@@ -192,6 +270,9 @@ git push -u 远程仓库地址别名 分支名称
  ```
 
 ## 拉取仓库
+
+### git clone
+
  ```shell
  # 克隆远端数据仓库到本地
  git clone 仓库地址
@@ -201,7 +282,21 @@ git push -u 远程仓库地址别名 分支名称
  git pull 远程仓库地址 分支名称
  ```
 
+### 下载 zip
+
+```shell
+# 下载 zip
+# 解压 zip
+# 初始化仓库
+git init
+# 添加远程仓库
+git remote add origin https://....
+# 拉取远程
+git pull
+```
+
 ## 冲突解决
+
 两个人修改了同一个文件的同一个地方，就会发生冲突。冲突需要人为解决
 
 - 推送到远程仓库产生冲突，冲突文件会显示具体信息
@@ -249,3 +344,35 @@ where git
 # "git.path": "D:\\git\\Git\\cmd\\git.exe" # 可选
 "terminal.integrated.shell.windows": "D:\\git\\Git\\bin\\bash.exe"
 ```
+
+# 实战
+
+## git status检测不到文件变化
+
+git管理软件SourceTree会遇到往项目里新增了文件，软件却没有任何反应的问题，
+
+这多发生在git合并出错而只能重新git的情况下，可能的原因是之前提交的文件"缓存"还在，所以相同的文件再提交时无法被检测。
+
+```shell
+1. 首先, 提交全部更新
+
+2. 执行 git rm -r --cached .  # 删除缓存文件，不会删除物理
+# -r 循环删除
+
+3. 执行 git add .
+
+4. 执行 git commit -m .  # SourceTree自带推送按钮，这一步命令行可以省略.
+```
+
+## 拉取远端代码到本地
+
+```shell
+1.新建空文件
+2.初始化
+git init
+3.添加远端仓库
+git stat
+```
+
+
+
