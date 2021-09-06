@@ -1,43 +1,40 @@
 # Typora
 
-markdown语法:https://www.jianshu.com/p/ebe52d2d468f
+[markdown语法](https://www.jianshu.com/p/ebe52d2d468f)
 
-Ctrl0~4 普通文本，一级~四级标题
+|                 按键                  |                         功能                         |
+| :-----------------------------------: | :--------------------------------------------------: |
+|               Ctrl+ 0~4               |               普通文本，一级~四级标题                |
+|              Ctrl+ B/I/U              | **加粗**（****）*斜体*（**）<u>下划线</u>（<u></u>） |
+|            Shift + Alt + 5            |                  ~~删除线~~（~~~~）                  |
+| Shift + Ctrl+ \`  或 行内代码块（``） |                        `123`                         |
+|                Ctrl+ K                |               [超链接](Typora)（[]()）               |
+|                Ctrl+ T                |                         表格                         |
+|            Ctrl+ Shift + I            |                        ![]()                         |
+|                Ctrl+ /                |                        源代码                        |
+|             Shift + enter             |                        单回车                        |
+|                 enter                 |                        双回车                        |
+|                  F11                  |                         全屏                         |
+|          Ctrl+ shift + enter          |                        <br />                        |
+|            Ctrl+ backspace            |                      删除当前行                      |
 
-|        按键         |                         功能                         |
-| :-----------------: | :--------------------------------------------------: |
-|      Ctrl+ 0~4      |               普通文本，一级~四级标题                |
-|     Ctrl+ B/I/U     | **加粗**（****）*斜体*（**）<u>下划线</u>（<u></u>） |
-|   Shift + Alt + 5   |                  ~~删除线~~（~~~~）                  |
-|   Shift + Ctrl+ `   |                  `行内代码块`（``）                  |
-|       Ctrl+ K       |               [超链接](Typora)（[]()）               |
-|       Ctrl+ T       |                         表格                         |
-|   Ctrl+ Shift + I   |                        ![]()                         |
-|       Ctrl+ /       |                        源代码                        |
-|    Shift + enter    |                        单回车                        |
-|        enter        |                        双回车                        |
-|         F11         |                         全屏                         |
-| Ctrl+ shift + enter |                        <br />                        |
-|        Ctrl+        |                       清除样式                       |
-|   Ctrl+ backspace   |                      删除当前行                      |
+*1~6级标题*
 
-
-
-==1~6级标题==
-
+```shell
 #
 ...
 ######
+```
 
-==引用==
+*引用*
 
-Ctrl+ Shift + Q	引用（>）
+`Ctrl+ Shift + Q`	引用（>）
 
 > ss
 >
 > >ss
 
-==代码块==（```c++)
+*代码块*（```c++)
 
 ```
 代码块	```c++
@@ -47,45 +44,43 @@ Ctrl+ Shift + Q	引用（>）
 甘特图 ```mermaid
 ```
 
-==无序列表==
+*无序列表*
 
 - 001
   - 002
     - 003
 
-==有序列表==
+*有序列表*
 
 1. 
 
-==任务列表==
+*任务列表*
 
 - [ ] 001
 
-==上下标==
+*上下标*
 
 x^2^  x~2~
 
-==注解==
+*注解*
 
 你们在干什么[^1]
 
 [^1]: 你猜
 
-==跳转==
+*跳转*
 
 [标题](#Typora)
 
-==分割线==（***）（---）
+*分割线*（***）（---）
 
 ***
-
----
 
 
 
 ```
 无序列表	- or * or +
-有序列表	1.+空格orTab
+有序列表	1.+ 空格 or Tab
 任务列表	- [ ] 001
 上标	x^2^ 
 下标	X~2~
@@ -96,16 +91,7 @@ x^2^  x~2~
 
 ==高亮==（====）
 
-==注释==<!--导出文件不显示-->
-
-<span style='color:red;background:背景颜色;font-size:文字大小;font-family:字体;'>文字</span>
-
-<font face="黑体">我是黑体字</font>
- <font face="微软雅黑">我是微软雅黑</font>
- <font face="STCAIYUN">我是华文彩云</font>
- <font color=#0099ff size=12 face="黑体">黑体</font>
- <font color=gray size=5>gray</font>
- <font color=#00ffff size=3>null</font>
+注释<!--导出文件不显示-->
 
 # Android Studio
 
@@ -157,21 +143,23 @@ x^2^  x~2~
 | :----------: | :------: |
 |  Ctrl+ Alt   | 获取鼠标 |
 | Shfit + z +z | 保存退出 |
+|     pwd      | 当前目录 |
+|              |          |
 
-# QT
+| 命令  | 作用         |
+| ----- | ------------ |
+| pwd   | 当前目录     |
+| mkdir | 新建目录     |
+| ls    | 显示目录内容 |
+| touch | 创建空文件   |
+| dir   | 显示目录     |
+| mv    | 改名         |
 
-|           按键           |       功能        |
-| :----------------------: | :---------------: |
-|         Ctrl+ R          |     运行代码      |
-|         Ctrl+ [          |  跳到代码块头部   |
-|         Ctrl+ ]          |  跳到代码块尾部   |
-|     Alt + right/left     | 回到上/下一个光标 |
-|       Alt + Enter        |   添加函数定义    |
-|     Ctrl+ Shfit + R      |   全局修改变量    |
-|         Ctrl+ i          |  自动缩进选中行   |
-| Ctrl+ Shift + < **\|** > | 折叠代码/展开代码 |
 
-# VsCode 
+
+# vscode 
+
+> `openInTerminal`： 以当前文件打开终端
 
 |                按键                |                          功能                          |
 | :--------------------------------: | :----------------------------------------------------: |
@@ -299,6 +287,10 @@ start "" "E:\HbuilderX\HBuilderX\HBuilderX.exe"&ping localhost -n 2
 
 *查看文件树形结构*
 
+`tree/?`：帮助  `tree`：文件夹结构  `tree/f`：含文件名
+
+`tree/f file.txt`：导出文件树到file.txt
+
 > `/?`：可以查看命令说明 
 >
 > eg ： `tree /?`
@@ -313,6 +305,34 @@ start "" "E:\WeChat\WeChat.exe"&ping localhost -n 1
 start "" "E:\HbuilderX\HBuilderX\HBuilderX.exe"&ping localhost -n 2
 ::start "" "E:\Microsoft VS Code\Code.exe"&ping localhost -n 2
 ```
+
+# npm
+
+## 配置镜像
+
+```shell
+npm config set registry https://registry.npm.taobao.org 
+npm info underscore （如果上面配置正确这个命令会有字符串response）
+
+npm --registry https://registry.npm.taobao.org info underscore 
+```
+
+```shell
+# 查看全局配置
+cd 
+subl .npnrc
+```
+
+## 命令
+
+```shell
+# 查看npm配置
+npm config ls 
+# 查看包信息
+npm info axios
+```
+
+
 
 
 

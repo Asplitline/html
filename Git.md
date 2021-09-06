@@ -6,22 +6,51 @@
 | ---------------- | ------------------ | ------------------- |
 | 用于存放提交记录 | 临时存放被修改文件 | 被Git管理的项目目录 |
 
-## git配置
+## 基础
+
+### 流程
+
+### git基础配置
 
 ```shell
-# 配置提交人姓名
+# 配置全局姓名
 git config --global user.name 提交人姓名
 git config --global user.name myqz
 
-# 配置提交人邮箱
+# 配置全局邮箱
 git config --global user.email 提交人邮箱 
-git config --global user.email ambition292@163.com
+git config --global user.email 123@qq.com
 
-# 查看git配置信息
-git config --list
+# 配置局部姓名和邮箱
+git config user.name 提交人姓名
+git config user.email 提交人邮箱 
 ```
 
-## git提交
+#### 查看配置
+
+```shell
+# 查看git配置信息
+git config --list
+
+# 查看全局配置
+cd
+subl .gitconfig
+
+# 查看局部配置
+subl .git/config
+```
+
+#### 配置忽略文件
+
+`.gitignore`
+
+```shell
+*.txt
+!a.txt
+/vendor/**/*.txt
+```
+
+### 提交暂存区
 
 ```shell
 # 初始化git仓库
@@ -44,21 +73,23 @@ git commit -a -m 提交信息
 # 查看提交记录
 git log
 
+# 修改提交内容
+git commit --amend
 ```
 
-## git撤销
+### 回退
+
+`checkout`：*切换分支* 或者 *还原工作树文件*
 
  ```shell
-# 用暂存区文件 >>覆盖>> 工作目录文件
+# 利用缓存区文件覆盖物理文件
 git checkout 文件
   
-# 将文件从暂存区中删除
-# 工作目录中文件还存在
+# 删除缓存区文件，文件还在
 git rm --cached 文件
+git rm -r --cached . 
 
-git rm -r --cached .  # 删除缓存文件，不会删除物理文件
 # 将git仓库中指定的更新记录恢复出来，并且覆盖暂存区和工作目录
-# 版本回退 git log 查看commitID -> 注意版本从高到低
 git reset --hard commitID
 
  ```
@@ -109,11 +140,13 @@ git checkout 分支名称
 
 # 删除分支（分支被合并后才允许删除） 强制删除
 git branch -d 分支名称
-
 git branch -a # 查看远端分支
 git branch -v # 显示分支提交信息
+
 #checkout远程的dev分支，在本地起名为dev分支，并切换到本地的dev分支
 git checkout -b dev origin/dev
+# 删除远程分支
+git push origin --delete 分支名称
  ```
 
 ## merge
@@ -142,6 +175,10 @@ git checkout -b dev origin/dev
 `fetch` 和 `merge` 的缩写
 
 `fetch`更新远程状态，`merge`最新状态和本地合并
+
+```bash
+git pull origin ask:ask # 将远程ask请求到本地ask
+```
 
 ## push
 
@@ -277,7 +314,7 @@ git push -u 远程仓库地址别名 分支名称
  # 克隆远端数据仓库到本地
  git clone 仓库地址
  # 远端代码
- git clone -b 分支 仓库地址
+ git clone -b 分支 仓库地址 本地路径
  # 拉取最新版本
  git pull 远程仓库地址 分支名称
  ```
@@ -333,7 +370,6 @@ git pull
 不需要被git管理的文件名字添加到此文件中，在执行git命令的时候，git就会忽略这些文件
 > 文件名： **.gitignore**
 
-
 # vscode 配置 gitbash
 
 ```shell
@@ -363,6 +399,20 @@ git管理软件SourceTree会遇到往项目里新增了文件，软件却没有�
 
 4. 执行 git commit -m .  # SourceTree自带推送按钮，这一步命令行可以省略.
 ```
+
+## 无法监测文件名大小写
+
+`git mv`
+
+```
+git mv Hello.js hello.js
+```
+
+`git commit`
+
+- Hello.js：随意改名
+- 提交
+- 然后改回 hello.js
 
 ## 拉取远端代码到本地
 
