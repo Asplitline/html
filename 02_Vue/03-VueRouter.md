@@ -127,6 +127,8 @@ const User = {
 
 > exp：`/user/lisi` 切换到 `/user/zhangsan`
 
+动态路由 可选 `path: '/user/:id?'`
+
 通过以下方法响应 路由参数变化
 
 `watch`监听

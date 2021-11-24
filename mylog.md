@@ -13,8 +13,6 @@
 
 # eslint
 
-
-
 ```json
 // .prettierrc
 // 逗号,单引号 

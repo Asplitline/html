@@ -18,6 +18,8 @@
 
  **实例 property 与方法**：它们都有前缀 `$`，以便与用户定义的 property 区分开来
 
+> $0.__vue__ 浏览器获取vue
+
 ### [实例生命周期钩子](https://cn.vuejs.org/v2/guide/instance.html#实例生命周期钩子)
 
 `created`钩子可以用来在一个实例**被创建之后**执行代码
@@ -538,19 +540,19 @@ vm.selected.number // => 123
 
 ```html
 <input v-model="searchText">
-<input v-bind:value="searchText" v-on:input="searchText=$event.target.value">
+<input :value="searchText" @input="searchText=$event.target.value">
 ```
 
 组件中使用v-model
 
 ```html
 <my-input
-  v-bind:value="searchText"
-  v-on:input="searchText = $event"
+  :value="searchText"
+  @input="searchText = $event"
 ></my-input>
 <!-- my-input -->
 <!-- 通过props接收值，$emit发送值-->
-<input v-bind:value="value" v-on:input="$emit('input',$event.target.value)">
+<input :value="value" @input="$emit('input',$event.target.value)">
 ```
 
 ### [动态组件](https://codesandbox.io/s/github/vuejs/vuejs.org/tree/master/src/v2/examples/vue-20-dynamic-components-with-binding?file=/index.html)

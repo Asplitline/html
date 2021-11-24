@@ -206,6 +206,7 @@ x^2^  x~2~
 |         **Ctrl + p** 输入@         |                      **符号导航**                      |
 |      Ctrl + shift + leftclick      |                    新开页面转到定义                    |
 |          Ctrl + shift + \          |                     跳转到匹配括号                     |
+|          **Alt  + 左右**           |                   上次/下次光标位置                    |
 
 # PhotoShop
 
@@ -250,11 +251,11 @@ x^2^  x~2~
 
 # potplayer
 
-| 按键 | 功能     |
-| ---- | -------- |
-| P    | 添加书签 |
-|      |          |
-|      |          |
+| 按键    | 功能     |
+| ------- | -------- |
+| P       | 添加书签 |
+| Alt + z | 书签定位 |
+|         |          |
 
 # uniapp
 
@@ -295,8 +296,6 @@ start "" "E:\HbuilderX\HBuilderX\HBuilderX.exe"&ping localhost -n 2
 >
 > eg ： `tree /?`
 
-
-
 # other
 
 ```shell
@@ -305,34 +304,6 @@ start "" "E:\WeChat\WeChat.exe"&ping localhost -n 1
 start "" "E:\HbuilderX\HBuilderX\HBuilderX.exe"&ping localhost -n 2
 ::start "" "E:\Microsoft VS Code\Code.exe"&ping localhost -n 2
 ```
-
-# npm
-
-## 配置镜像
-
-```shell
-npm config set registry https://registry.npm.taobao.org 
-npm info underscore （如果上面配置正确这个命令会有字符串response）
-
-npm --registry https://registry.npm.taobao.org info underscore 
-```
-
-```shell
-# 查看全局配置
-cd 
-subl .npnrc
-```
-
-## 命令
-
-```shell
-# 查看npm配置
-npm config ls 
-# 查看包信息
-npm info axios
-```
-
-
 
 
 

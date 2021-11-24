@@ -1,7 +1,5 @@
 [TOC]
 
-# https://react.docschina.org/docs/lifting-state-up.html
-
 # React
 
 `React` 是一个用于构建用户界面的 `JAVASCRIPT` 库
@@ -135,6 +133,12 @@ ReactDOM.render(
 *JSX防止注入攻击*：React DOM 在渲染所有输入内容之前，*默认会进行转义*。
 
 *样式*：`React` 推荐使用*内联样式*。使用 `camelCase` 语法来设置内联样式，会在指定元素数字后自动添加 `px` 
+
+`{{}}` ：外层`{}`为 变量解析，内层`{}`为 样式对象
+
+```jsx
+ <ListItem  style={{color:red,fontSize:12}} />
+```
 
 *数组*：自动展开
 
@@ -312,9 +316,13 @@ componentWillUnmount() {
 }
 ```
 
-### 子传父&&父传子
+### 组件之间传值
 
+*子传父* ：通过 父元素传给 一个*能改变父元素`state`的回调*。
 
+*父传子*：通过 `props`
+
+*兄弟之间*：共同子元素，或共同父元素
 
 ## State
 
@@ -347,6 +355,31 @@ this.setState((prevState, props) => ({
 ```
 
 > `setState`*总会*触发组件*重绘*，除非在`shouldComponentUpdate()`实现条件渲染逻辑
+
+### 获取最新值 
+
+通过`setState`回调
+
+```jsx
+this.setState({
+    count:this.state.count+1
+},()=>{
+    console.log(this.state.count)
+})
+console.log(this.state.count) // 此处无法获取最新值
+```
+
+`Promise + async`
+
+```jsx
+setStateSync(res){
+   return new Promise((resolve)=>{
+      this.setState(state,resolve)
+   })    
+}
+```
+
+
 
 ### 钩子函数
 
@@ -716,6 +749,8 @@ render() {
 
 *更复杂情况，考虑**提取组件***
 
+> 不满足单根，使用`<React.Fragment></React.Fragment>`包裹，简写为  `<> </>`
+
 ### 隐藏组件
 
 让 `render` 方法直接返回 `null`，而不进行任何渲染。但`componentWillUpdate` 和 `componentDidUpdate` 依然可以被调用
@@ -740,7 +775,7 @@ ReactDOM.render(
 
 ### keys
 
-`Keys` ：在 DOM 中某些元素被增加或删除，帮助 `React` 识别*哪些元素发生了变化*
+`Keys` ：在 DOM 中某些元素被增加或删除，**帮助 `React` 识别哪些元素发生了变化**
 
 选择*不指定显式 key* 值，将默认*使用索引*用作为列表项目的 *key 值*
 
@@ -836,6 +871,8 @@ ReactDOM.render(
 `React`：可变状态（`mutable state`）通常保存在组件的 `state` 属性中，并且只能通过使用 [`setState()`](https://react.docschina.org/docs/react-component.html#setstate)来更新
 
 两者结合（**受控组件**），React 的 `state` 成为*“唯一数据源”*。渲染表单的 React 组件还*控制着用户输入过程中表单发生的操作*。
+
+> *受控组件*：state管理value，*非受控组件*：通过操作dom管理组件
 
 ```jsx
 class NameForm extends React.Component {
@@ -1234,62 +1271,3 @@ function App() {
 | **component`WillUpdate`**       | 组件接*收到新`props`或者`state`但**还没有render***时被调用 | 初始化时不会被调用                                           |
 | **component`DidUpdate`**        | 组件*完成更新后*立即调用                                   | 在初始化时不会被调用。                                       |
 | **component`WillUnmount`**      | 组件从 *DOM 中移除之前*立刻被调用                          |                                                              |
-
-## Refs
-
-这个特殊的属性允许你引用 `render()` 返回的相应的支撑实例
-
-```jsx
-class MyComponent extends React.Component {
-  handleClick() {
-    // 使用原生的 DOM API 获取焦点
-    this.refs.myInput.focus();
-  }
-  render() {
-    //  当组件插入到 DOM 后，ref 属性添加一个组件的引用于到 this.refs
-    return (
-      <div>
-        <input type="text" ref="myInput" />
-        <input
-          type="button"
-          value="点我输入框获取焦点"
-          onClick={this.handleClick.bind(this)}
-        />
-      </div>
-    );
-  }
-}
-ReactDOM.render(
-  <MyComponent />,
-  document.getElementById('example')
-);
-```
-
-*最新写法*
-
-```jsx
-class MyComponent extends React.Component {
-    constructor(props) {
-        super(props);
-        this.myRef = React.createRef();  
-    }
-  handleClick() {
-    // 使用原生的 DOM API 获取焦点
-    this.myRef.current.focus();
-  }
-  render() {
-    //  当组件插入到 DOM 后，ref 属性添加一个组件的引用于到 this.refs
-    return (
-      <div>
-        <input type="text" ref={this.myRef} />
-        <input
-          type="button"
-          value="点我输入框获取焦点"
-          onClick={this.handleClick.bind(this)}
-        />
-      </div>
-    );
-  }
-}
-```
-

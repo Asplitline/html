@@ -69,3 +69,24 @@ macOS下，打开**钥匙串访问**
 
 > 描述文件：  `.mobileprovision`
 
+
+
+# IOS 开发生产模式配置
+
+![image-20211023142741690](uniapp离线打包_image/image-20211023142741690.png)
+
+![image-20211023142728522](uniapp离线打包_image/image-20211023142728522.png)
+
+
+
+# IOS 相机相册权限配置
+
+官方demo：[IOS集成相册](https://nativesupport.dcloud.net.cn/UniMPDocs/UseModule/ios/ios?id=下面以-gallery-模块为例)
+
+```bash
+# 用户相册权限
+Privacy - Photo Library Usage Description
+# 保存图片至相册
+Privacy - Photo Library Additions Usage Description
+```
+
