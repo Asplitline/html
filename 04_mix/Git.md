@@ -49,6 +49,12 @@ git rm -r --cached .
 git reset --hard commitID
  ```
 
+```bash
+git reflog
+```
+
+
+
 ## linux - 基础命令
 
 ```shell
@@ -141,6 +147,7 @@ rebase：将分支出发点从 旧master 移动到 新master。
 git remote add <remote_alias> <remote_url>
 # 记住本次推送的分支和别名
 git push -u <remote_alias> <branch_name>
+git push --set-upstream <remote_alias> <branch_name>
 # 推送仓库
 git push <remote_url> <branch_name>
 git push <remote_alias> <branch_name> #需先取别名
@@ -578,7 +585,18 @@ git reset --hard o/main # 回滚
 git checkout xx
 ```
 
+## git clone - RPC failed
 
+```bash
+error: RPC failed; curl 18 transfer closed with outstanding read data remaining
+fetch-pack: unexpected disconnect while reading sideband packet
+fatal: early EOF
+fatal: fetch-pack: invalid index-pack output
+```
+
+```bash
+git config --global http.postBuffer 524288000
+```
 
 # 快捷键
 

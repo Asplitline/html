@@ -47,3 +47,13 @@
 ![image-20210824184750514](window_image/image-20210824184750514.png)
 
 ![image-20210824184802965](window_image/image-20210824184802965.png)
+
+## 自定义 bat 开启应用
+
+```bash
+start "" "E:\qq\Bin\QQScLauncher.exe"&ping localhost -n 0
+start "" "E:\WeChat\WeChat.exe"&ping localhost -n 1
+::start "" "E:\HbuilderX\HBuilderX\HBuilderX.exe"&ping localhost -n 2
+::start "" "E:\Microsoft VS Code\Code.exe"&ping localhost -n 2
+```
+

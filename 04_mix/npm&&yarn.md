@@ -27,6 +27,10 @@ npm config ls
 npm info axios
 # 查看源
 npm config get registry 
+# 查看文档
+npm docs axios
+# 查看源码
+npm repo axios
 ```
 
 ## install  - 安装
@@ -202,7 +206,7 @@ yarn link @pancakeswap/uikit
 yarn install --force
 ```
 
-
+> 建议 直接在 package.json 中添加，然后  yarn install --force
 
 # yrm
 
@@ -305,6 +309,9 @@ netsh winhttp reset proxy
 netsh winhttp show proxy
 
 # git 配置局部代理
+git config http.proxy http://127.0.0.1:1080
+git config https.proxy http://127.0.0.1:1080
+
 git config http.proxy socks5://127.0.0.1:1080
 git config https.proxy socks5://127.0.0.1:1080
 
