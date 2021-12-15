@@ -3,7 +3,7 @@
 **Hook 使你在无需修改组件结构的情况下复用状态逻辑。**
 
 > **完全可选，向后兼容**
->
+> 
 > hook 在 class内部不起作用
 
 ==**启用 Hook，所有 React 相关的 package 都必须升级到 16.8.0 或更高版本**。==
@@ -32,7 +32,7 @@ class Example extends React.Component {
 
 #### hook
 
-##### useState 
+##### useState
 
 state 只在首次渲染时创建初始化，下一次直接使用
 
@@ -333,7 +333,6 @@ function FriendStatusWithCounter(props) {
 **class**：通过 `Update` ，清除旧的订阅新的。可能会忘记处理 `Update`，造成Bug 
 
 ```jsx
-
   componentDidUpdate(prevProps) {
     // 取消订阅之前的 friend.id
     ChatAPI.unsubscribeFromFriendStatus(
@@ -385,10 +384,9 @@ useEffect(() => {
 
 > 确保数组中包含了**所有外部作用域中会随时间变化并且在 effect 中使用的变量**，否则你的代码会引用到先前渲染中的旧变量
 
-- 
-
-```jsx
-import React, { useState, useEffect } from 'react';
+- ```jsx
+  import React, { useState, useEffect } from 'react';
+  ```
 
 function FriendStatus(props) {
   const [isOnline, setIsOnline] = useState(null);
@@ -409,8 +407,8 @@ function FriendStatus(props) {
   }
   return isOnline ? 'Online' : 'Offline';
 }
-```
 
+```
 ### effect 执行时机
 
 与 `componentDidMount`、`componentDidUpdate` 不同的是，传给 `useEffect` 的函数会**在浏览器完成布局与绘制之后**，在一个延迟事件中被调用，会保证在任何**新的渲染前**执行。
@@ -447,9 +445,9 @@ Hook 就是 JavaScript 函数，遵循以下两条规则
 - **不要在循环，条件或嵌套函数中调用 Hook，** 在 React 函数的最顶层以及任何 return 之前调用他们。 -  这样能保证顺序调用，Hook 的调用顺序在每次渲染中都是相同
 
 - **不要在普通的 JavaScript 函数中调用 Hook。**- 让代码状态逻辑清晰
-
+  
   - [x] React 函数组件
-
+  
   - [x] 自定义Hook
 
 [`eslint-plugin-react-hooks`](https://www.npmjs.com/package/eslint-plugin-react-hooks) 的 ESLint 插件来强制执行这两条规则
@@ -472,8 +470,6 @@ npm install eslint-plugin-react-hooks --save-dev
   }
 }
 ```
-
-
 
 ## 自定义hook
 
@@ -573,8 +569,6 @@ function Todos() {
   // ...
 }
 ```
-
-
 
 ## 其他hook
 
@@ -738,7 +732,6 @@ function Counter({initialCount}) {
     </>
   );
 }
-
 ```
 
 #### 跳过dispath
@@ -786,7 +779,7 @@ const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
 
 - **可变**：将 ref 对象以 `<div ref={myRef} />` 形式传入组件，则无论该节点如何改变，React 都会将 ref 对象的 `.current` 属性设置为相应的 DOM 节点
 - **区别**：`useRef()` 和自建一个 `{current: ...}` 对象的唯一区别是，`useRef` 会在每次渲染时返回同一个 ref 对象。
--  ref 对象内容发生变化时，`useRef` 并*不会*通知你，在 React 绑定或解绑 DOM 节点的 ref 时运行某些代码，则需要使用[回调 ref](https://zh-hans.reactjs.org/docs/hooks-faq.html#how-can-i-measure-a-dom-node) 来实现。
+- ref 对象内容发生变化时，`useRef` 并*不会*通知你，在 React 绑定或解绑 DOM 节点的 ref 时运行某些代码，则需要使用[回调 ref](https://zh-hans.reactjs.org/docs/hooks-faq.html#how-can-i-measure-a-dom-node) 来实现。
 
 ```js
 const refContainer = useRef(initialValue);
@@ -837,8 +830,6 @@ FancyInput = forwardRef(FancyInput);
 
 会在所有的 **DOM 变更之后==同步==**调用 effect。使用它来**读取 DOM 布局并同步触发重渲染**，在**浏览器执行绘制之前**，`useLayoutEffect` 内部的更新计划将被同步刷新。
 
-
-
 **问题**：服务端渲染， `useLayoutEffect` 和 `useEffect` 都**无法在 Javascript 代码加载完成之前执行**。
 
 **解决**：要从服务端渲染 中排除依赖布局 effect 组件，使用 `showChild && <Child />` 进行条件渲染，并使用 `useEffect(() => { setShowChild(true); }, [])` 延迟展示组件。
@@ -867,7 +858,7 @@ useDebugValue(date, date => date.toDateString());
 
 ## Hooks FAQ
 
-### Class => Hook
+### Class => Hook - 生命周期
 
 - `constructor`：函数组件不需要构造函数。通过调用 [`useState`](https://zh-hans.reactjs.org/docs/hooks-reference.html#usestate) 来初始化 state。如果计算的代价比较昂贵，你可以传一个函数给 `useState`。
 - `getDerivedStateFromProps`：改为 [在渲染时](https://zh-hans.reactjs.org/docs/hooks-faq.html#how-do-i-implement-getderivedstatefromprops) 安排一次更新。
