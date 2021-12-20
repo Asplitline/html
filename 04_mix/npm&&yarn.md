@@ -31,6 +31,8 @@ npm config get registry
 npm docs axios
 # 查看源码
 npm repo axios
+# 查看目录
+npm root -g
 ```
 
 ## install  - 安装

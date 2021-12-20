@@ -867,4 +867,199 @@ useDebugValue(date, date => date.toDateString());
 - `componentDidMount`, `componentDidUpdate`, `componentWillUnmount`：[useEffect Hook](https://zh-hans.reactjs.org/docs/hooks-reference.html#useeffect) 可以表达所有这些(包括 [不那么](https://zh-hans.reactjs.org/docs/hooks-faq.html#can-i-skip-an-effect-on-updates) [常见](https://zh-hans.reactjs.org/docs/hooks-faq.html#can-i-run-an-effect-only-on-updates) 的场景)的组合。
 - `getSnapshotBeforeUpdate`，`componentDidCatch` 以及 `getDerivedStateFromError`：目前还没有这些方法的 Hook 等价写法，但很快会被添加。
 
-### 
+### ？实例变量
+
+[`useRef()`](https://zh-hans.reactjs.org/docs/hooks-reference.html#useref) Hook 不仅可以用于 DOM refs。「ref」 对象是一个 `current` 属性可变且可以容纳任意值的通用容器
+
+```jsx
+function Timer() {
+  const intervalRef = useRef();
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      // ...
+    });
+    intervalRef.current = id;
+    return () => {
+      clearInterval(intervalRef.current);
+    };
+  });
+
+  // ...
+}
+```
+
+设定一个循环定时器，不会需要这个 ref（仅用来清除循环定时器）
+
+```jsx
+  // ...
+  function handleCancelClick() {
+    clearInterval(intervalRef.current);  }
+  // ...
+```
+
+### 单个还是多个 state 变量
+
+总是在一次 `useState()` 调用中传入一个包含了所有 state 的对象，但是它并不像 `this.setState`会自动合并
+
+```jsx
+setState(state => ({ ...state, left: e.pageX, top: e.pageY }));
+```
+
+**推荐把 state 切分成多个 state 变量，每个变量包含的不同值会在同时发生变化**
+
+- 更容易抽离相关逻辑
+
+```jsx
+const [position, setPosition] = useState({ left: 0, top: 0 });
+const [size, setSize] = useState({ width: 100, height: 100 });
+```
+
+### 获取上一轮 props 或 state
+
+通过 ref 实现
+
+```jsx
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  const prevCountRef = useRef();
+  useEffect(() => {
+    prevCountRef.current = count;
+  });
+  const prevCount = prevCountRef.current;
+
+  return <h1>Now: {count}, before: {prevCount}</h1>;
+}
+```
+
+### ？如何实现 `getDerivedStateFromProps
+
+### ？测量 DOM 节点
+
+### 省略依赖列表
+
+**只有 当函数（以及它所调用的函数）不引用 props、state 以及由它们衍生而来的值时，你才能放心地把它们从依赖列表中省略。**
+
+> 以下案列存在bug
+
+```jsx
+function ProductPage({ productId }) {
+  const [product, setProduct] = useState(null);
+
+  async function fetchProduct() {
+    const response = await fetch('http://myapi/product/' + productId); // 使用了 productId prop
+    const json = await response.json();
+    setProduct(json);
+  }
+
+  useEffect(() => {
+    fetchProduct();
+  }, []); // 🔴 这样是无效的，因为 `fetchProduct` 使用了 `productId`
+  // ...
+}
+```
+
+推荐修复方案，把函数移到effect内部。
+
+> 建议 **在 effect 内部去声明它所需要的函数**，更容易发现依赖项
+
+```jsx
+function ProductPage({ productId }) {
+  const [product, setProduct] = useState(null);
+
+  useEffect(() => {
+    // 把这个函数移动到 effect 内部后，我们可以清楚地看到它用到的值。
+    async function fetchProduct() {
+      const response = await fetch('http://myapi/product/' + productId);
+      const json = await response.json();
+      setProduct(json);
+    }
+    fetchProduct();
+  }, [productId]); // ✅ 有效，因为我们的 effect 只用到了 productId
+  // ...
+}
+```
+
+定义局部变量来处理无序响应。
+
+```jsx
+ useEffect(() => {
+    let ignore = false;
+    async function fetchProduct() {
+      const response = await fetch('http://myapi/product/' + productId);
+      const json = await response.json();
+      if (!ignore) setProduct(json);
+    }
+
+    fetchProduct();
+    return () => { ignore = true };
+  }, [productId]
+```
+
+如果出于某些原因你 **无法 把一个函数移动到 effect 内部**，其他办法
+
+- **函数移动到组件之外**，函数就无法依赖 props和state
+- 万不得已的情况下，你可以 **把函数加入 effect 的依赖但 把它的定义包裹 **进 [`useCallback`](https://zh-hans.reactjs.org/docs/hooks-reference.html#usecallback) Hook。
+
+```jsx
+function ProductPage({ productId }) {
+  // ✅ 用 useCallback 包裹以避免随渲染发生改变
+  const fetchProduct = useCallback(() => {
+    // ... Does something with productId ...
+  }, [productId]); // ✅ useCallback 的所有依赖都被指定了
+
+  return <ProductDetails fetchProduct={fetchProduct} />;
+}
+
+function ProductDetails({ fetchProduct }) {
+  useEffect(() => {
+    fetchProduct();
+  }, [fetchProduct]); // ✅ useEffect 的所有依赖都被指定了
+  // ...
+}
+```
+
+### [？](https://zh-hans.reactjs.org/docs/hooks-faq.html#what-can-i-do-if-my-effect-dependencies-change-too-often)effect 依赖频繁变化
+
+以下案例：count 不会变化
+
+传入空的依赖数组 `[]`，只在组件挂载时运行一次。
+
+在 `setInterval` 的回调中，`count` 的值不会发生变化。因为当 effect 执行时，我们会创建一个闭包，并将 `count` 的值被保存在该闭包当中，且初值为 `0`。每隔一秒，回调就会执行 `setCount(0 + 1)`，因此，`count` 永远不会超过 1。
+
+```jsx
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setCount(count + 1); // 这个 effect 依赖于 `count` state
+    }, 1000);
+    return () => clearInterval(id);
+  }, []); // 🔴 Bug: `count` 没有被指定为依赖
+
+  return <h1>{count}</h1>;
+}
+```
+
+指定 `[count]` 作为依赖列表就能修复这个 Bug，但会导致每次改变发生时定时器都被重置。
+
+```jsx
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setCount(c => c + 1); // ✅ 在这不依赖于外部的 `count` 变量
+    }, 1000);
+    return () => clearInterval(id);
+  }, []); // ✅ 我们的 effect 不使用组件作用域中的任何变量
+
+  return <h1>{count}</h1>;
+}
+```
+
+==用 `useReducer` Hook 把 state 更新逻辑移到 effect 之外。[这篇文章](https://adamrackis.dev/state-and-use-reducer/)==？
+
+# https://zh-hans.reactjs.org/docs/hooks-faq.html#what-can-i-do-if-my-effect-dependencies-change-too-often
