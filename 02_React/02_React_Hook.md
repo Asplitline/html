@@ -14,6 +14,15 @@
 
 允许在函数组件中，添加 state的hook，用于数据初始化和设置，
 
+### useState
+
+state 只在首次渲染时创建初始化，下一次直接使用
+
+- 参数 （唯一）：初始值。在第一次渲染调用
+- 返回值：返回一对值`[state,setState]`，当前 state 以及更新 state 的函数
+
+> **不会自动合并更新对象**
+
 ### 声明state
 
 #### class
@@ -24,22 +33,11 @@ this.state
 class Example extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      count: 0
-    };
+    this.state = {count: 0};
   }
 ```
 
 #### hook
-
-##### useState
-
-state 只在首次渲染时创建初始化，下一次直接使用
-
-- 参数 （唯一）：初始值。在第一次渲染调用
-- 返回值：返回一对值`[state,setState]`，当前 state 以及更新 state 的函数
-
-React 使用 [`Object.is` 比较算法](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is#Description) 来比较 state，相等会React 将跳过子组件的渲染及 effect 的执行。
 
 **默认初始化**
 
@@ -54,13 +52,14 @@ function Example() {
 
 **惰性初始化**
 
-初始 state 需要通过复杂计算获得，则可以传入一个函数
+初始 state 需要通过复杂计算获得，则可以传入一个函数，在函数中计算并返回初始的 state，此函数**只会在初始渲染时被调用**
 
 ```jsx
-const [state, setState] = useState(() => {
-  const initialState = someExpensiveComputation(props);
-  return initialState;
-});
+const initCounter = () => {
+    console.log('initCounter');
+    return { number: props.number };
+  };
+const [counter, setCounter] = useState(initCounter);
 ```
 
 ### 读取state
@@ -95,8 +94,6 @@ state
 
 #### hook
 
-**不会自动合并更新对象**
-
 直接赋值
 
 ```jsx
@@ -105,21 +102,35 @@ state
 
 函数式更新
 
+往 `setState` 传递函数，该函数将接收先前的 state，并返回一个更新后的值
+
 ```jsx
 <button onClick={() => setCount(prevCount => prevCount - 1)}>-</button>
 ```
 
+React 使用 [`Object.is` 比较算法](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is#Description) 来比较 state，相等会React 将跳**过子组件的渲染及 effect 的执行**。
+
 ## Effect Hook
 
-在函数组件中执行副作用操作，会在组件**渲染到屏幕之后**执行。
+在函数组件主体内（React 渲染阶段）改变 DOM、添加订阅、设置定时器、记录日志以及执行其他包含**副作用操作**都是不被允许的，这可能会**产生bug 并破坏 UI 的一致性**
 
-**副作用**：函数组件主体内（指在 React 渲染阶段）改变 DOM、添加订阅、设置定时器、记录日志以及执行其他包含副作用的操作。这些操作**会莫名其妙产生bug，破坏UI一致性**
+> 副作用操作：[纯函数和副作用函数](#纯函数和副作用函数)
 
-### useEffect
+### useEffect 
 
-- **每次渲染后**调用（包括第一次）`DidMount + DidUpdate`
-- 返回值：返回一个清除函数，用来清除副作用 `unMount`
-- 组件内声明，可以访问到  state 和 props
+用于完成副作用操作
+
+- 参数：包含副作用代码的函数
+- 返回值：返回一个清除函数，用来清除副作用
+- 组件内声明：可以访问到  state 和 props
+- 执行时机：在浏览器完成布局和绘制之后，下一次重新渲染之前执行
+
+与生命周期的对比
+
+- 初次渲染后或者更新完成更新完成后 =>`DidMount + DidUpdate`
+- 清除函数 => `unMount`
+
+当依赖项是引用类型时，React 会对比当前渲染下的依赖项和上次渲染下的依赖项的内存地址是否一致，如果一致，effect 不会执行，只有当对比结果不一致时，effect 才会执行。
 
 ### effect 操作
 
@@ -169,6 +180,8 @@ function Example() {
   ...
 }
 ```
+
+# https://mp.weixin.qq.com/s/PKLJnaygOTl9vmSq2GtExA
 
 #### 清除effect
 
@@ -443,12 +456,12 @@ useEffect(
 Hook 就是 JavaScript 函数，遵循以下两条规则
 
 - **不要在循环，条件或嵌套函数中调用 Hook，** 在 React 函数的最顶层以及任何 return 之前调用他们。 -  这样能保证顺序调用，Hook 的调用顺序在每次渲染中都是相同
-
 - **不要在普通的 JavaScript 函数中调用 Hook。**- 让代码状态逻辑清晰
   
   - [x] React 函数组件
-  
   - [x] 自定义Hook
+
+> **在组件中 React 是通过判断 Hook 调用的顺序来判断某个 state 对应的 `useState`**，所以必须保证 Hook 的调用顺序在多次渲染之间保持一致，React 才能正确地将内部 state 和
 
 [`eslint-plugin-react-hooks`](https://www.npmjs.com/package/eslint-plugin-react-hooks) 的 ESLint 插件来强制执行这两条规则
 
@@ -1061,5 +1074,60 @@ function Counter() {
 ```
 
 ==用 `useReducer` Hook 把 state 更新逻辑移到 effect 之外。[这篇文章](https://adamrackis.dev/state-and-use-reducer/)==？
+
+
+
+# QA
+
+## 纯函数和副作用函数
+
+纯函数（ Pure Function ）：对于**相同的输入，永远会得到相同的输出**，而且没有任何可观察的副作用，这样的函数被称为纯函数。
+
+副作用函数（ Side effect Function ）：如果一个函数在运行的过程中，除了返回函数值，还对**主调用函数产生附加的影响**，这样的函数被称为副作用函数。
+
+useEffect 就是在 React 更新 DOM 之后运行一些额外的代码，也就是执行副作用操作，比如请求数据，设置订阅以及手动更改 React 组件中的 DOM 等。
+
+## Class 组件 缺陷
+
+- **难以复用组件间状态逻辑** - 代码冗余
+
+  - 组件状态逻辑的复用，需要 **props render**和**高阶组件**等解决方案，造成层级冗余，嵌套地狱
+
+- **难以维护复杂组件** - 逻辑混乱
+
+  - 不同逻辑混杂在同一生命周期，相同逻辑却在不同生命周期
+  - ==？组件常常充斥着状态逻辑的访问和处理，不能拆分为更小的粒度，可通过状态管理库集中管理状态，但耦合了状态管理库又会导致组件复用性降低==
+
+- **this 指向问题** - 需手动绑定this
+
+  - class 的方法默认不会绑定 this， this值为 undefined。方法中访问 this 则必须**在构造器中绑定**或**使用 class fields 语法**（实验性语法）
+
+  ```jsx
+  class Example extends React.Component {
+   constructor(props) {
+    ...
+    // 方式1: 在构造函数中绑定 this
+    this.handleClick = this.handleClick.bind(this);
+   }
+   handleClick() {
+    this.setState({...})
+   }
+   
+   // 方式2: 使用 class fields 语法
+   handleClick = () => {
+    this.setState({...})
+   }
+  }
+  ```
+
+- **难以对 class 进行编译优化** - 难以优化
+
+  - 由于 JavaScript 历史设计原因，使用 class 组件会让组件预编译过程中变得难以进行优化，如 class 不能很好的压缩，并且会使热重载出现不稳定的情况
+
+## HOOK 优势
+
+- 自定义HOOK：不改变结构的情况下复用逻辑
+- 更小拆分
+- 非 class 的情况下使用更多 React 特性
 
 # https://zh-hans.reactjs.org/docs/hooks-faq.html#what-can-i-do-if-my-effect-dependencies-change-too-often

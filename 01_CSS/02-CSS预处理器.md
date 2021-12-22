@@ -11,6 +11,17 @@ lessc -v # 查看版本
 
 # scss
 
+```bash
+base.scss # 基础
+iconfont.scss # 字体图标
+index.scss # 入口文件
+mixin.scss # 混入
+reset.scss # 样式重置
+variable.scss # 变量
+```
+
+
+
 # 全局变量
 
 ### create-react-app 
