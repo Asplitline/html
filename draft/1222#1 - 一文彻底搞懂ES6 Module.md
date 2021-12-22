@@ -136,23 +136,30 @@ function setName(element) {
 }
 ```
 
-`as` 取 别名
+- `as` 取 别名
 
 ```js
 import { lastName as surname } from './profile.js';
 ```
 
-`*` 加载整个模块
+- `*` 加载整个模块
 
 ```js
 import * as circle from './circle';
 ```
 
-输入的变量都是只读的，不允许修改，但是如果是对象，允许修改属性（**不建议修改**）
+- 输入的变量都是只读的，不允许修改，但是如果是对象，允许修改属性（**不建议修改**）
 
-`from` ：指定文件位置（相对路径或绝对路径）。如果为模块名，需要有==??配置文件==
+```js
+import {a} from './xxx.js'
 
-**import 自动会提升到头部**
+a.foo = 'hello'; // 合法操作
+a = {}; // Syntax Error : 'a' is read-only;
+```
+
+- `from` ：指定文件位置（相对路径或绝对路径）。如果为模块名，需要有==??配置文件==
+
+- **import 自动会提升到头部**
 
 ```js
 foo();
@@ -160,5 +167,34 @@ foo();
 import { foo } from 'my_module';
 ```
 
+- 多次重复导入，只执行一次
 
+### export default
+
+```jsx
+export default function () {
+    console.log('foo');
+}
+```
+
+无需变量名或函数名就可完成加载
+
+```js
+import customName from './export-default';
+customName(); // 'foo'
+```
+
+### import() - 动态加载
+
+将`import()`作为函数调用
+
+- 参数：模块的路径。
+- 返回： `promise`，它用一个模块对象来实现，让你可以访问该对象的导出
+
+```js
+import('/modules/myModule.mjs')
+  .then((module) => {
+    // Do something with the module.
+  });
+```
 

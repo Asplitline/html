@@ -6,74 +6,25 @@
 
 ## 基础
 
-### 提交暂存区
-
 ```shell
 # 初始化git仓库
 git init
+```
+
+```shell
+git 命令 -h # 简略
+git 命令 --help #详细
+```
+
+## status - 状态
+
+```shell
+
 
 # 查看文件状态
 git status 
-
-# 追踪文件,提交到暂存区
-git add 文件列表
-git add readme.md
-git add . # 工作目录所有文件添加暂存区
-
-# 向仓库中提交代码
-git commit -m 提交信息  
-git commit -m 添加readme
-
-# 合并 add + commit
-git commit -a -m 提交信息
-# 查看提交记录
-git log
-
-# 修改提交内容
-git commit --amend
-```
-
-### 回退
-
-`checkout`：*切换分支* 或者 *还原工作树文件*
-
- ```shell
-# 利用缓存区文件覆盖物理文件
-git checkout 文件
-  
-# 删除缓存区文件，文件还在
-git rm --cached 文件
-git rm -r --cached . 
-
-# 将git仓库中指定的更新记录恢复出来，并且覆盖暂存区和工作目录
-git reset --hard commitID
- ```
-
-```bash
-git reflog
-```
-
-
-
-## linux - 基础命令
-
-```shell
-# 添加readme.md
-# 创建readme.md 向其中插入 "first"
-echo "first" > readme.md
-
-# 新建文件
-touch <file>
-# 新建文件夹
-mkdir <folder>
-```
-
-## git - 基础命令
-
-```shell
-# 命令参数列表
-git 命令 -h # 简略
-git 命令 --help #详细
+git status -s # 简短
+git status --ignored # 包括忽略文件
 ```
 
 ##  branch - 分支命令
@@ -86,11 +37,18 @@ git 命令 --help #详细
 
 **功能分支 -> 开发分支 -> 主分支**
 
-### 分支命令 
+### 查看分支
+
+```shell
+# 查看分支
+git branch    # 本地
+git branch -r # 远程
+git branch -a # 所有（包括远端）
+git branch -v # 显示分	支提交信息
+git branch -vv # 包括远程分支信息
+```
 
  ```shell
-# 查看分支
-git branch 
 # 创建分支
 git branch <branch_name>
 
@@ -100,10 +58,6 @@ git branch -m new # 当前分支改名
 
 # 切换分支
 git checkout 分支名称
-
-
-git branch -a # 查看所有分支（包括远端）
-git branch -v # 显示分支提交信息
 
 
 # checkout远程的dev分支，在本地起名为dev分支，并切换到本地的dev分支
@@ -123,20 +77,58 @@ git branch -d <branch_name>
 git branch -D <branch_name>
 ```
 
-## rebase - replace base
+## log - 版本历史
 
-合并记录出现原因：从 master 分支新建分支，并且master分支由新的提交记录。此时新建分支还指向旧的master
+### log
 
-rebase：将分支出发点从 旧master 移动到 新master。
+```shell
+# 查看历史记录
+git log
+# 简洁历史记录
+git log --oneline
+git log --pretty=online # 会完全显示id
+# 倒序查看
+git log --reverse
+# 对比查看
+git log -p 
+# 最近num次提交
+git log -<num>
+# 文件变化
+git log --name-only
+# 文件状态（A | M）
+git log --name-status
+```
 
-> 如果 master分支没有新记录，此时合并只会移动指针（`fast-forward`）
+```shell
+# 范围 f5f630a和HEAD 之间记录
+git log f5f630a..HEAD
+# 查看文件变化的记录
+git log a.js
+```
 
-解决问题
+### reflog
 
-- 将提交记录变为线性
-- 传统合并，master并分支新分支，合并冲突由 master处理。通过 新分支rebase，可以将冲突，交由 分支开发者处理。
+可以查看所有分支的所有操作记录（包括**被删除的 commit 记录和 reset 的操作**）
 
-`git rebase`：取出一系列的提交记录，“复制”它们，然后在另外一个地方逐个的放下去
+```shell
+git relog
+```
+
+## commit - 提交
+
+```shell
+# 向仓库中提交代码
+git commit -m 提交信息  
+git commit -m 添加readme
+
+# 合并 add + commit - 修改+删除文件，不含添加文件
+git commit -a -m 提交信息
+git commit -am 提交信息
+
+# 修改提交信息 && 合并提交
+git commit --amend
+git commit --amend -m # 可以直接修改
+```
 
 ## push - 推送本地仓库
 
@@ -156,34 +148,6 @@ git push # 需先记住地址
 
 > 不带参数，与`push.default`有关
 
-## 偏易提交
-
-远程提交一次记录，本地提交一次记录
-
-合并两次记录，本地记录为最新
-
-### rebase
-
-```shell
-git fetch
-git rebase xx
-git push
-# 简写
-git pull --rebase
-git push
-```
-
-### merge
-
-```shell
-git fetch
-git merge xx
-git push
-# 简写
-git pull
-git push
-```
-
 ## stash - 临时存储区
 
 暂时提取分支上所有的改动并存储，让开发人员得到一个干净的工作副本，临时转向其他工作。
@@ -191,8 +155,7 @@ git push
 **默认情况**
 
 - 添加到暂存区的修改（staged changes）
-- Git跟踪的但并未添加到暂存区的修改（unstaged changes）
-不会缓存
+- Git跟踪的但并未添加到暂存区的修改（unstaged changes）不会缓存
 - 在工作目录中新的文件（untracked files）
 - 被忽略的文件（ignored files）
 
@@ -208,28 +171,47 @@ git stash save <note>
 git stash list
 # 查看临时存储区文件区别
 git stash show
+git stash show stash@{0}
 git stash show --patch # 简写 -p，更详细信息
 ```
 
 ```shell
-# 恢复临时存储区（自动删除）
+# 恢复临时存储区（删除记录）
 git stash pop
-# 恢复临时存储区（不会删除）
-git stash apply
+# 恢复临时存储区（不删除记录）
+git stash apply stash@{0} # 旧写法
+git stash apply n
 # 删除临时存储区
 git stash drop
 # 清空临时存储区
 git stash clear
 ```
 
-恢复临时存储区新旧写法（删除写法类似）
-
-- ~~`git stash apply stash@{0}`~~
--  `git stash apply n`
-
-- 清空stash：`git stash clear`
-
 > **恢复的时候注意当前分支是否为当初保存的分支**
+
+```shell
+# 从stash 新建 分支
+git stash branch new_banch
+
+# 将0记录提出，并新建分支（不删除记录）
+git stash branch demo 0
+```
+
+自定义 statsh
+
+作用：创建了一个记录，但当前修改或删除的文件**并未从工作区移除** 
+
+> 正常stash，创建记录并清空工作区，方便切换分支
+
+```shell
+git stash create
+# 09eb9a97ad632d0825be1ece361936d1d0bdb5c7
+git stash store 09eb9a97ad632d0825be1ece361936d1d0bdb5c7
+git stash list
+# stash@{0}: Created via "git stash store".
+```
+
+
 
 ## config - 配置
 
@@ -247,7 +229,6 @@ git config alias.a add
 
 # 查看配置
 git config --list
-
 ```
 
 配置文件
@@ -284,22 +265,6 @@ alias go="git checkout"
 /vendor/**/*.txt
 ```
 
-## commit - 提交
-
-```shell
-# 向仓库中提交代码
-git commit -m 提交信息  
-git commit -m 添加readme
-
-# 合并 add + commit
-git commit -a -m 提交信息
-
-# 修改提交信息 && 合并提交
-git commit --amend
-```
-
-
-
 ## remote - 远端操作
 
 `git remote`
@@ -329,13 +294,44 @@ git remote set-url origin <remote_url>
 
 ## merge - 合并分支
 
-`git merge`：合并两个分支时会产生一个特殊的提交记录，它有两个父节点
+两个分支时会产生一个特殊的提交记录，它有两个父节点
 
-## pull - 拉取远端分支（自动合并）
+- 默认：`fast-farward merge`合并方式，会**直接**将 `Master`分支指向 `Develop` 分支
+- `--squash` ：合并时将commit **压缩**为 1个
+- `--no-ff` ：执行正常合并，在 `Master`分支上**生成一个新节点**，保证版本演进更清晰
+- `--no-edit`：没有冲突的情况下合并，自动生成 说明文字并提交（`Merge branch 'test'`）
 
-`git pull`
+> 压缩一个：将 多个commit 整合，然后通过commit手动提交一次
 
-`fetch` 和 `merge`的合并写法，`fetch`更新远程状态，`merge`最新状态和本地合并。
+```SHELL
+git merge --squash
+git merge --no-ff
+git merge --no-edit
+```
+
+<img src="https://mmbiz.qpic.cn/mmbiz_png/kChlCQZAfH5eBrzeP4kHVbwcqAicZkgowMRTMOI4wPj7ZZSURhODgT5QGEicfXIS3icW6LJRTwf4YdJUWOnugxQoA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" style="zoom:50%;" />
+
+**部分记录合并**：指定提交（commit）应用于其他分支
+
+```shell
+git cherry-pick <commitHash>
+```
+
+## rebase - replace base
+
+合并冲突：从 master 分支新建分支，并且master分支由新的提交记录，此时新建分支还指向旧的master。
+
+rebase：将分支**出发点**从 旧master 移动到 新master。
+
+- 将提交记录变为线性
+- 传统合并，master并分支新分支，合并冲突由 master处理。
+- 通过 新分支rebase，可以将冲突，交由 分支开发者处理。
+
+> 如果 master分支没有新记录，此时合并只会移动指针（`fast-forward`）
+
+## pull - 拉取远端分支
+
+`fetch` 和 `merge`的合并写法，`fetch`更新远程状态，`merge`更新状态和本地合并。
 
 ```shell
 # fetch  + merge
@@ -345,6 +341,20 @@ git merge temp # 将temp合并到ask
 git branch -d temp # 删除temp分支
 # pull
 git pull origin ask:ask # 将远程ask请求到本地ask
+```
+
+## reset - 重设
+
+当前分支重设（reset）到指定的 `<commit>` 或者 `HEAD`
+
+- `--mixed`：默认，保留文件内容，回退提交历史
+- `--soft`：暂存区和工作区中的内容不作任何改变，HEAD指针回退
+- `--hard` ：工作区和HEAD指针都回退
+
+```shell
+git reset --mixed <commit>
+git reset --soft <commit>
+git reset --hard <commit>
 ```
 
 ## tag - 标签和版本管理
@@ -372,39 +382,38 @@ git pull origin ask:ask # 将远程ask请求到本地ask
 | `git clone --branch [tag] [git_url]` | 拉取指定分支 |
 | `git clone -b [tag] [git_url]`       |              |
 
-## log - 版本历史
+## other - 杂项命令
 
-`git log`
+### checkout 
+
+切换分支 或者 还原工作树文件
 
 ```shell
-# 查看历史记录
-git log
-# 简洁历史记录
-git log --oneline
-# 倒序查看
-git log --reverse
-# 对比查看
-git log -p 
-# 最近num次提交
-git log -<num>
-# 文件变化
-git log --name-only
-# 文件状态（A | M）
-git log --name-status
+ # 利用缓存区文件覆盖物理文件
+ git checkout 文件
 ```
-
-## other - 杂项命令
 
 ### rm - 清除缓存区
 
+git rm 等效 rm + git add
+
+| git rm                   | git rm --cached                              | git restore --staged |
+| ------------------------ | -------------------------------------------- | -------------------- |
+| 从版本库移除，本地也移除 | 从版本库移除，本地存在（也可用于移除暂存区） | 移出缓存区           |
+
 ```shell
-# 删除文件 当前分支
-git rm -r <fileName>
-# 从版本库移除，本地存在（也可用于移除暂存区）
-git rm --cached <fileName>
 # 从版本库移除，本地也移除
 git rm <fileName>
+# 删除文件夹
+git rm -r <fileName>
 ```
+
+```shell
+# 从版本库移除，本地存在（也可用于移除暂存区）
+git rm --cached <fileName>
+```
+
+### restore - 
 
 ```shell
 # 移出缓存区 - 适用于（未commit）
@@ -413,7 +422,11 @@ git restore --staged <file>
 git restore <file>
 ```
 
+> 删除都是争对当前分支
+
 ### mv - 修改文件名
+
+git mv 等效 mv + git add
 
 ```shell
 git mv index.js Index.js
@@ -429,10 +442,6 @@ git mv index.js Index.js
 # 生成zip
 git archive master --prefix='confict/' --format=zip > confict.zip
 ```
-
-## 系统别名
-
-
 
 # Github
 
@@ -533,6 +542,21 @@ where git
 # "git.path": "D:\\git\\Git\\cmd\\git.exe" # 可选
 "terminal.integrated.shell.windows": "D:\\git\\Git\\bin\\bash.exe"
 ```
+
+# linux - 基础命令
+
+```shell
+# 添加readme.md
+# 创建readme.md 向其中插入 "first"
+echo "first" > readme.md
+
+# 新建文件
+touch <file>
+# 新建文件夹
+mkdir <folder>
+```
+
+
 
 # 实战
 
