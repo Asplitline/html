@@ -14,6 +14,15 @@
 
 允许在函数组件中，添加 state的hook，用于数据初始化和设置，
 
+### useState
+
+state 只在首次渲染时创建初始化，下一次直接使用
+
+- 参数 （唯一）：初始值。在第一次渲染调用
+- 返回值：返回一对值`[state,setState]`，当前 state 以及更新 state 的函数
+
+> **不会自动合并更新对象**
+
 ### 声明state
 
 #### class
@@ -24,22 +33,11 @@ this.state
 class Example extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      count: 0
-    };
+    this.state = {count: 0};
   }
 ```
 
 #### hook
-
-##### useState
-
-state 只在首次渲染时创建初始化，下一次直接使用
-
-- 参数 （唯一）：初始值。在第一次渲染调用
-- 返回值：返回一对值`[state,setState]`，当前 state 以及更新 state 的函数
-
-React 使用 [`Object.is` 比较算法](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is#Description) 来比较 state，相等会React 将跳过子组件的渲染及 effect 的执行。
 
 **默认初始化**
 
@@ -54,13 +52,14 @@ function Example() {
 
 **惰性初始化**
 
-初始 state 需要通过复杂计算获得，则可以传入一个函数
+初始 state 需要通过复杂计算获得，则可以传入一个函数，在函数中计算并返回初始的 state，此函数**只会在初始渲染时被调用**
 
 ```jsx
-const [state, setState] = useState(() => {
-  const initialState = someExpensiveComputation(props);
-  return initialState;
-});
+const initCounter = () => {
+    console.log('initCounter');
+    return { number: props.number };
+  };
+const [counter, setCounter] = useState(initCounter);
 ```
 
 ### 读取state
@@ -95,8 +94,6 @@ state
 
 #### hook
 
-**不会自动合并更新对象**
-
 直接赋值
 
 ```jsx
@@ -105,21 +102,35 @@ state
 
 函数式更新
 
+往 `setState` 传递函数，该函数将接收先前的 state，并返回一个更新后的值
+
 ```jsx
 <button onClick={() => setCount(prevCount => prevCount - 1)}>-</button>
 ```
 
+React 使用 [`Object.is` 比较算法](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is#Description) 来比较 state，相等会React 将跳**过子组件的渲染及 effect 的执行**。
+
 ## Effect Hook
 
-在函数组件中执行副作用操作，会在组件**渲染到屏幕之后**执行。
+在函数组件主体内（React 渲染阶段）改变 DOM、添加订阅、设置定时器、记录日志以及执行其他包含**副作用操作**都是不被允许的，这可能会**产生bug 并破坏 UI 的一致性**
 
-**副作用**：函数组件主体内（指在 React 渲染阶段）改变 DOM、添加订阅、设置定时器、记录日志以及执行其他包含副作用的操作。这些操作**会莫名其妙产生bug，破坏UI一致性**
+> 副作用操作：[纯函数和副作用函数](#纯函数和副作用函数)
 
-### useEffect
+### useEffect 
 
-- **每次渲染后**调用（包括第一次）`DidMount + DidUpdate`
-- 返回值：返回一个清除函数，用来清除副作用 `unMount`
-- 组件内声明，可以访问到  state 和 props
+用于完成副作用操作
+
+- 参数：包含副作用代码的函数
+- 返回值：返回一个清除函数，用来清除副作用
+- 组件内声明：可以访问到  state 和 props
+- 执行时机：在浏览器完成布局和绘制之后，下一次重新渲染之前执行
+
+与生命周期的对比
+
+- 初次渲染后或者更新完成更新完成后 =>`DidMount + DidUpdate`
+- 清除函数 => `unMount`
+
+当依赖项是引用类型时，React 会对比当前渲染下的依赖项和上次渲染下的依赖项的内存地址是否一致，如果一致，effect 不会执行，只有当对比结果不一致时，effect 才会执行。
 
 ### effect 操作
 
@@ -169,6 +180,8 @@ function Example() {
   ...
 }
 ```
+
+# https://mp.weixin.qq.com/s/PKLJnaygOTl9vmSq2GtExA
 
 #### 清除effect
 
@@ -443,12 +456,12 @@ useEffect(
 Hook 就是 JavaScript 函数，遵循以下两条规则
 
 - **不要在循环，条件或嵌套函数中调用 Hook，** 在 React 函数的最顶层以及任何 return 之前调用他们。 -  这样能保证顺序调用，Hook 的调用顺序在每次渲染中都是相同
-
 - **不要在普通的 JavaScript 函数中调用 Hook。**- 让代码状态逻辑清晰
   
   - [x] React 函数组件
-  
   - [x] 自定义Hook
+
+> **在组件中 React 是通过判断 Hook 调用的顺序来判断某个 state 对应的 `useState`**，所以必须保证 Hook 的调用顺序在多次渲染之间保持一致，React 才能正确地将内部 state 和
 
 [`eslint-plugin-react-hooks`](https://www.npmjs.com/package/eslint-plugin-react-hooks) 的 ESLint 插件来强制执行这两条规则
 
@@ -867,4 +880,254 @@ useDebugValue(date, date => date.toDateString());
 - `componentDidMount`, `componentDidUpdate`, `componentWillUnmount`：[useEffect Hook](https://zh-hans.reactjs.org/docs/hooks-reference.html#useeffect) 可以表达所有这些(包括 [不那么](https://zh-hans.reactjs.org/docs/hooks-faq.html#can-i-skip-an-effect-on-updates) [常见](https://zh-hans.reactjs.org/docs/hooks-faq.html#can-i-run-an-effect-only-on-updates) 的场景)的组合。
 - `getSnapshotBeforeUpdate`，`componentDidCatch` 以及 `getDerivedStateFromError`：目前还没有这些方法的 Hook 等价写法，但很快会被添加。
 
-### 
+### ？实例变量
+
+[`useRef()`](https://zh-hans.reactjs.org/docs/hooks-reference.html#useref) Hook 不仅可以用于 DOM refs。「ref」 对象是一个 `current` 属性可变且可以容纳任意值的通用容器
+
+```jsx
+function Timer() {
+  const intervalRef = useRef();
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      // ...
+    });
+    intervalRef.current = id;
+    return () => {
+      clearInterval(intervalRef.current);
+    };
+  });
+
+  // ...
+}
+```
+
+设定一个循环定时器，不会需要这个 ref（仅用来清除循环定时器）
+
+```jsx
+  // ...
+  function handleCancelClick() {
+    clearInterval(intervalRef.current);  }
+  // ...
+```
+
+### 单个还是多个 state 变量
+
+总是在一次 `useState()` 调用中传入一个包含了所有 state 的对象，但是它并不像 `this.setState`会自动合并
+
+```jsx
+setState(state => ({ ...state, left: e.pageX, top: e.pageY }));
+```
+
+**推荐把 state 切分成多个 state 变量，每个变量包含的不同值会在同时发生变化**
+
+- 更容易抽离相关逻辑
+
+```jsx
+const [position, setPosition] = useState({ left: 0, top: 0 });
+const [size, setSize] = useState({ width: 100, height: 100 });
+```
+
+### 获取上一轮 props 或 state
+
+通过 ref 实现
+
+```jsx
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  const prevCountRef = useRef();
+  useEffect(() => {
+    prevCountRef.current = count;
+  });
+  const prevCount = prevCountRef.current;
+
+  return <h1>Now: {count}, before: {prevCount}</h1>;
+}
+```
+
+### ？如何实现 `getDerivedStateFromProps
+
+### ？测量 DOM 节点
+
+### 省略依赖列表
+
+**只有 当函数（以及它所调用的函数）不引用 props、state 以及由它们衍生而来的值时，你才能放心地把它们从依赖列表中省略。**
+
+> 以下案列存在bug
+
+```jsx
+function ProductPage({ productId }) {
+  const [product, setProduct] = useState(null);
+
+  async function fetchProduct() {
+    const response = await fetch('http://myapi/product/' + productId); // 使用了 productId prop
+    const json = await response.json();
+    setProduct(json);
+  }
+
+  useEffect(() => {
+    fetchProduct();
+  }, []); // 🔴 这样是无效的，因为 `fetchProduct` 使用了 `productId`
+  // ...
+}
+```
+
+推荐修复方案，把函数移到effect内部。
+
+> 建议 **在 effect 内部去声明它所需要的函数**，更容易发现依赖项
+
+```jsx
+function ProductPage({ productId }) {
+  const [product, setProduct] = useState(null);
+
+  useEffect(() => {
+    // 把这个函数移动到 effect 内部后，我们可以清楚地看到它用到的值。
+    async function fetchProduct() {
+      const response = await fetch('http://myapi/product/' + productId);
+      const json = await response.json();
+      setProduct(json);
+    }
+    fetchProduct();
+  }, [productId]); // ✅ 有效，因为我们的 effect 只用到了 productId
+  // ...
+}
+```
+
+定义局部变量来处理无序响应。
+
+```jsx
+ useEffect(() => {
+    let ignore = false;
+    async function fetchProduct() {
+      const response = await fetch('http://myapi/product/' + productId);
+      const json = await response.json();
+      if (!ignore) setProduct(json);
+    }
+
+    fetchProduct();
+    return () => { ignore = true };
+  }, [productId]
+```
+
+如果出于某些原因你 **无法 把一个函数移动到 effect 内部**，其他办法
+
+- **函数移动到组件之外**，函数就无法依赖 props和state
+- 万不得已的情况下，你可以 **把函数加入 effect 的依赖但 把它的定义包裹 **进 [`useCallback`](https://zh-hans.reactjs.org/docs/hooks-reference.html#usecallback) Hook。
+
+```jsx
+function ProductPage({ productId }) {
+  // ✅ 用 useCallback 包裹以避免随渲染发生改变
+  const fetchProduct = useCallback(() => {
+    // ... Does something with productId ...
+  }, [productId]); // ✅ useCallback 的所有依赖都被指定了
+
+  return <ProductDetails fetchProduct={fetchProduct} />;
+}
+
+function ProductDetails({ fetchProduct }) {
+  useEffect(() => {
+    fetchProduct();
+  }, [fetchProduct]); // ✅ useEffect 的所有依赖都被指定了
+  // ...
+}
+```
+
+### [？](https://zh-hans.reactjs.org/docs/hooks-faq.html#what-can-i-do-if-my-effect-dependencies-change-too-often)effect 依赖频繁变化
+
+以下案例：count 不会变化
+
+传入空的依赖数组 `[]`，只在组件挂载时运行一次。
+
+在 `setInterval` 的回调中，`count` 的值不会发生变化。因为当 effect 执行时，我们会创建一个闭包，并将 `count` 的值被保存在该闭包当中，且初值为 `0`。每隔一秒，回调就会执行 `setCount(0 + 1)`，因此，`count` 永远不会超过 1。
+
+```jsx
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setCount(count + 1); // 这个 effect 依赖于 `count` state
+    }, 1000);
+    return () => clearInterval(id);
+  }, []); // 🔴 Bug: `count` 没有被指定为依赖
+
+  return <h1>{count}</h1>;
+}
+```
+
+指定 `[count]` 作为依赖列表就能修复这个 Bug，但会导致每次改变发生时定时器都被重置。
+
+```jsx
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setCount(c => c + 1); // ✅ 在这不依赖于外部的 `count` 变量
+    }, 1000);
+    return () => clearInterval(id);
+  }, []); // ✅ 我们的 effect 不使用组件作用域中的任何变量
+
+  return <h1>{count}</h1>;
+}
+```
+
+==用 `useReducer` Hook 把 state 更新逻辑移到 effect 之外。[这篇文章](https://adamrackis.dev/state-and-use-reducer/)==？
+
+
+
+# QA
+
+## 纯函数和副作用函数
+
+纯函数（ Pure Function ）：对于**相同的输入，永远会得到相同的输出**，而且没有任何可观察的副作用，这样的函数被称为纯函数。
+
+副作用函数（ Side effect Function ）：如果一个函数在运行的过程中，除了返回函数值，还对**主调用函数产生附加的影响**，这样的函数被称为副作用函数。
+
+useEffect 就是在 React 更新 DOM 之后运行一些额外的代码，也就是执行副作用操作，比如请求数据，设置订阅以及手动更改 React 组件中的 DOM 等。
+
+## Class 组件 缺陷
+
+- **难以复用组件间状态逻辑** - 代码冗余
+
+  - 组件状态逻辑的复用，需要 **props render**和**高阶组件**等解决方案，造成层级冗余，嵌套地狱
+
+- **难以维护复杂组件** - 逻辑混乱
+
+  - 不同逻辑混杂在同一生命周期，相同逻辑却在不同生命周期
+  - ==？组件常常充斥着状态逻辑的访问和处理，不能拆分为更小的粒度，可通过状态管理库集中管理状态，但耦合了状态管理库又会导致组件复用性降低==
+
+- **this 指向问题** - 需手动绑定this
+
+  - class 的方法默认不会绑定 this， this值为 undefined。方法中访问 this 则必须**在构造器中绑定**或**使用 class fields 语法**（实验性语法）
+
+  ```jsx
+  class Example extends React.Component {
+   constructor(props) {
+    ...
+    // 方式1: 在构造函数中绑定 this
+    this.handleClick = this.handleClick.bind(this);
+   }
+   handleClick() {
+    this.setState({...})
+   }
+   
+   // 方式2: 使用 class fields 语法
+   handleClick = () => {
+    this.setState({...})
+   }
+  }
+  ```
+
+- **难以对 class 进行编译优化** - 难以优化
+
+  - 由于 JavaScript 历史设计原因，使用 class 组件会让组件预编译过程中变得难以进行优化，如 class 不能很好的压缩，并且会使热重载出现不稳定的情况
+
+## HOOK 优势
+
+- 自定义HOOK：不改变结构的情况下复用逻辑
+- 更小拆分
+- 非 class 的情况下使用更多 React 特性
+
+# https://zh-hans.reactjs.org/docs/hooks-faq.html#what-can-i-do-if-my-effect-dependencies-change-too-often
