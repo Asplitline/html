@@ -291,6 +291,19 @@ npm config get production
 npm config set production false
 ```
 
+## RequestError
+
+connect ETIMEDOUT 20.205.243.166:443
+
+1. cmd中 ping github.com ，是否能够正常连接
+2. 不能正常连接，在 `C:\Windows\System32\drivers\etc`目录下host 文件下添加 
+
+```bash
+140.82.114.3 github.com
+```
+
+> 140.82.114.3获取：在 https://ipaddress.com/ 中，搜索 github.com
+
 
 
 # 配置代理
