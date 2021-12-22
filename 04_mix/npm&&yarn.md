@@ -31,8 +31,6 @@ npm config get registry
 npm docs axios
 # 查看源码
 npm repo axios
-# 查看目录
-npm root -g
 ```
 
 ## install  - 安装
@@ -135,9 +133,9 @@ yarn upgrade [package]@[tag]
 ```shell
 # 安装 npm-check-updates
 yarn global add npm-check-updates
- 
+
 # 更新包（yarn.lock和package.json同步更新）
- 
+
 ncu --upgrade --upgradeAll && yarn upgrade
 ```
 
@@ -145,7 +143,7 @@ ncu --upgrade --upgradeAll && yarn upgrade
 
 ```shell
 yarn upgrade-interactive --latest
- 
+
 # 需要手动选择升级的依赖包，按空格键选择，a 键切换所有，i 键反选选择
 ```
 
@@ -237,12 +235,12 @@ rednpm -- http://registry.mirror.cqupt.edu.cn
 skimdb -- https://skimdb.npmjs.com/registry
 yarn ----  https://registry.yarnpkg.com
 ```
+
 使用淘宝镜像源
 
 ```shell
 yrm use taobao
 ```
-
 
 测试访问速度
 
@@ -272,8 +270,6 @@ nvm use 12.14.0
 nvm list
 ```
 
-
-
 # 问题
 
 ## node-sass
@@ -287,7 +283,6 @@ nvm list
 ==如果production 为 true 将不会安装  开发依赖==
 
 ```bash
-
 npm config get production
 
 npm config set production false
@@ -305,8 +300,6 @@ connect ETIMEDOUT 20.205.243.166:443
 ```
 
 > 140.82.114.3获取：在 https://ipaddress.com/ 中，搜索 github.com
-
-
 
 # 配置代理
 
@@ -352,4 +345,3 @@ yarn config set https-proxy http://127.0.0.1:1080
 yarn config delete proxy
 yarn config delete https-proxy
 ```
-
