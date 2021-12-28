@@ -4,33 +4,73 @@
 
 ## config - 配置
 
-### 配置镜像
+### npm config 修改
+
+- `proxy, https-proxy`：指定 npm 使用的代理
+- `registry`： 指定 `npm` 下载安装包时的源
+- `package-lock` ：是否默认生成 `package-lock` 文件（默认 true）
 
 ```shell
 # 淘宝源
 npm config set registry http://registry.npm.taobao.org/
-
-npm info underscore （如果上面配置正确这个命令会有字符串response）
-
-npm --registry https://registry.npm.taobao.org info underscore 
-
 # 官方源
 npm config set registry https://registry.npmjs.org/
 ```
 
-### 配置查看
-
 ```shell
 # 查看npm配置
 npm config ls 
-# 查看包信息
-npm info axios
-# 查看源
-npm config get registry 
-# 查看文档
-npm docs axios
-# 查看源码
-npm repo axios
+# 查看配置项
+npm config get <key> 
+# 设置配置项
+npm config set <key> 
+# 删除配置项
+npm config delete <key> 
+```
+
+### 文件修改
+
+`npmrc` 文件
+
+```shell
+# 使用 命令 打开 npmrc
+npm config edit # 局部
+npm config edit -g # 全局配置文件
+```
+
+重新初始化默认设置
+
+- 第一行用空字符串替换配置文件
+
+- 第二行用默认设置重新填充配置文件
+
+```shell
+# 局部
+echo "" > $(npm config get userconfig)
+npm config edit
+
+# 全局
+echo "" > $(npm config get globalconfig)
+npm config --global edit
+```
+
+
+
+**文件优先级** - 从高到低
+
+- 工程内：`/path/to/my/project/.npmrc`
+- 用户级：`~/.npmrc`
+- 全局配置：`$PREFIX/etc/npmrc`
+- npm内置配置文件：`/path/to/npm/npmrc`
+
+可以配置独有的源，如：公司内网需要通过代理才能访问`npm`源，创建一个 `.npmrc` 文件来共享需要在团队间共享的 `npm` 运行相关配置。
+
+并且作用域为项目级，更好隔离公司和个人
+
+```shell
+proxy = http://proxy.example.com/
+https-proxy = http://proxy.example.com/
+registry = http://registry.example.com/
 ```
 
 ## install  - 安装
@@ -44,9 +84,165 @@ npm install <package> --save-prod | -P
 npm run rebuild 
 ```
 
+## env - 环境变量
+
 ```shell
+# 列出所有环境变量
+npm run env
+# 输出环境变量
+echo PATH
+# 设置环境变量 - 绝对
+echo PATH = /usr/local/lib
+# 设置环境变量 - 相对
+echo PATH = ${pwd}/lib/include  # 使用${},也可以直接使用双引号
+```
+
+## other - 其他
+
+```shell
+# 查看包信息
+npm info axios
+# 查看文档
+npm docs axios
+# 查看源码
+npm repo axios
 # 清除缓存
 npm cache clean --force
+# 查看版本
+npm view axios versions
+```
+
+## npm 发布
+
+### 目录结构
+
+包含以下目录：
+
+- `bin`：可执行二进制文件
+- `lib`：js代码
+- `doc`：文档
+- `test`：单元测试用例代码
+
+### 发布包
+
+1. 注册 npm 账号
+
+```shell
+npm adduser #根据提示输入用户名密码即可
+```
+
+2. 使用命令发布你的包
+
+通过配置一个 `.npmignore` 文件来排除一些文件, 防止大量的垃圾文件推送到 `npm`。
+
+`.gitignore` 文件也可以充当 `.npmignore` 文件
+
+```shell
+npm publish
+```
+
+3. 安装
+
+```shell
+npm install <package_name>
+```
+
+4. 更新包
+
+使用 `npm publish` 命令发布，不过**必须更改 npm 包的版本号**
+
+### 版本管理
+
+版本规范：https://semver.org/
+
+#### 标准版本
+
+- `major`：主版本，不兼容的API 修改
+- `minor`：次版本，当向下兼容的功能性新增
+- `patch`：修订号，向下兼容的问题修正。
+
+#### 先行版本
+
+先行版本号可以加到`“主版本号.次版本号.修订号”`的后面，先加上一个连接号再加上一连串以句点分隔的标识符和版本编译信息。
+
+`3.2.0-beta.5`
+
+- `alpha`：内部版本
+- `beta`：公测版本
+- `rc` 即 `Release candiate`：正式版本候选版本
+
+#### 发布版本
+
+```shell
+# version 1.0.0
+# 升级补丁版本号 1.0.1
+npm version patch
+# 升级小版本号 1.1.0
+npm version minor
+# 升级大版本号 2.0.0
+npm version major
+```
+
+`semver`：通过js处理版本。
+
+```shell
+npm install semver
+```
+
+### 依赖详解
+
+```js
+  "dependencies": {
+    "signale": "1.4.0",
+    "figlet": "*",
+    "react": "16.x",
+    "table": "~5.4.6",
+    "yargs": "^14.0.0"
+  }
+```
+
+`x.y.z` - 主版本号.次版本号.修订号
+
+| 标识   | 说明                                   |
+| ------ | -------------------------------------- |
+| 1.4.0  | 固定版本号                             |
+| *      | 任意版本 （>=0）                       |
+| 16.x   | 主要版本（16.0.0<= version <17.0.0）   |
+| 16.3.x | 次要版本（16.3.0<=  version <16.4.0）  |
+| ~      | 保持修订版本(`z`)最新。xy不变。        |
+| ^      | 保持次版本和修订版本(`y,z`)最新。x不变 |
+
+**特殊** - 主版本为 0
+
+- 主版本号和次版本号都为 `0`: `^0.0.z`、`~0.0.z` 都被当作固定版本
+- 主版本号为 `0`: `^0.y.z` 表现和 `~0.y.z` 相同，只保持修订号（`z`）为最新版本。
+
+### 依赖更新
+
+`npm outdated` ：列出有哪些还没有升级到最新版本的依赖：
+
+- 黄色：不符合我们指定的语意化版本范围 - 不需要升级
+- 红色：符合指定的语意化版本范围 - 需要升级
+
+```shell
+npm outedated
+# 升级红色依赖
+npm update 
+```
+
+总结：
+
+- 升级依赖：修改 `package.json`文件的依赖版本，执行 `npm install`
+- 降级依赖:：执行 `npm install package@version`，改动`package.json`**不会对依赖进行降级**
+
+> 注意改动依赖后提交`lock`文件
+
+自动增加版本号
+
+```shell
+{
+  "predeploy": "npm version patch"
+}
 ```
 
 # [yarn](https://yarnpkg.com/)
