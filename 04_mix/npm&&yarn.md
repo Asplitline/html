@@ -1,3 +1,23 @@
+# package.json
+
+```js
+{
+  "name": "project",
+  "version": "1.0.0",
+  "dependencies": {
+    "left-pad": "1.0.0",
+    "c": "file:../c-1",
+    "d2": "file:../d2-1"
+  },
+  "resolutions": {
+    "d2/left-pad": "1.1.1",
+    "c/**/left-pad": "^1.1.2"
+  }
+}
+```
+
+resolutions ：选择性依赖，控制依赖的版本
+
 # npm
 
 ## 配置镜像
@@ -84,6 +104,13 @@ yarn config set registry http://registry.npm.taobao.org/
 # 官方源
 yarn config set registry https://registry.npmjs.org/
 ```
+
+```bash
+yarn config get
+yarn config delete
+```
+
+
 
 ## install - 安装
 
