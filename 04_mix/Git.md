@@ -611,14 +611,32 @@ https://docs.github.com/en/developers/webhooks-and-events/webhooks
 
 # vscode 配置 gitbash
 
-```shell
+查看git位置
+
+```bash
 # 命令行获取 git路径
 where git
+```
 
+```shell
 # settings.json中配置
 # "git.path": "D:\\git\\Git\\cmd\\git.exe" # 可选
 "terminal.integrated.shell.windows": "D:\\git\\Git\\bin\\bash.exe"
 ```
+
+新版配置
+
+```json
+"terminal.integrated.defaultProfile.windows": "bash",
+"terminal.integrated.profiles.windows": {
+  "bash": {
+    "path": "D:\\Git\\bin\\bash.exe",
+    "args": []
+  }
+},
+```
+
+
 
 # linux - 基础命令
 
