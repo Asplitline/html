@@ -1,23 +1,3 @@
-# package.json
-
-```js
-{
-  "name": "project",
-  "version": "1.0.0",
-  "dependencies": {
-    "left-pad": "1.0.0",
-    "c": "file:../c-1",
-    "d2": "file:../d2-1"
-  },
-  "resolutions": {
-    "d2/left-pad": "1.1.1",
-    "c/**/left-pad": "^1.1.2"
-  }
-}
-```
-
-resolutions ：选择性依赖，控制依赖的版本
-
 # npm
 
 ## 配置镜像
@@ -568,3 +548,72 @@ yarn config set https-proxy http://127.0.0.1:1080
 yarn config delete proxy
 yarn config delete https-proxy
 ```
+
+# package.json
+
+# package.json
+
+```js
+{
+  "name": "project",
+  "version": "1.0.0",
+  "dependencies": {
+    "left-pad": "1.0.0",
+    "c": "file:../c-1",
+    "d2": "file:../d2-1"
+  },
+  "resolutions": {
+    "d2/left-pad": "1.1.1",
+    "c/**/left-pad": "^1.1.2"
+  }
+}
+```
+
+resolutions ：选择性依赖，控制依赖的版本
+
+- 直接依赖（`foo/bar`）：foo的**直接**依赖bar，指向声明版本
+- 间接依赖（`foo/**/bar`）：foo的**间接**依赖bar，指向声明版本
+- 所有（`bar`）：**不管位置**，依赖`bar`都会指向声明版本
+
+```js
+"resolutions": {
+  "bar": "1.0.0", // 所有依赖bar，1.0.0
+  "foo/bar": "1.0.0",  // ，1.0.0
+  "foo/**/bar": "1.0.0"
+}
+```
+
+
+
+# yarn.lock
+
+yarn.lock 是自动生成的，以下两种情况自动更新 `package.json` 和 `package.lock`
+
+- 新增依赖：`yarn add`
+- 升级依赖：`yarn upgrade`
+
+```json
+core-js-compat@^3.0.0:
+  version "3.14.0"
+  resolved "https://registry.npmjs.org/core-js-compat/-/core-js-compat-3.14.0.tgz#b574dabf29184681d5b16357bd33d104df3d29a5"
+  integrity sha1-tXTavykYRoHVsWNXvTPRBN89KaU=
+  dependencies:
+    browserslist "^4.16.6"
+    semver "7.0.0"
+```
+
+**Identifier(s)**：`core-js-compat@^3.0.0`是依赖的 identifier。
+
+- package.json 里对应的包名和版本区间，用`@`连接。
+- 可能多个 Identifier 指向同一版本
+
+**version**：实际安装的版本，满足版本区间里的一个版本 (除非配置`resolutions` ) 。
+
+**resolved**：一个链接，下载包的地址。
+
+integrity：对`resolved`下载下来的文件进行完整性校验。如果出现 diff，说明同一个下载链接对应的文件被修改过。
+
+**dependencies**：包自己的依赖。
+
+- 依赖的`browserslist "^4.16.6"`
+- 看下实际安装的哪个版本，把它拼成`browserslist@^4.16.6`，以此为关键字在 yarn.lock 中搜索，就能找到对应的“块”
