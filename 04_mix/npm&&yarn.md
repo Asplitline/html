@@ -71,6 +71,8 @@ npm cache clean --force
 
 # [yarn](https://yarnpkg.com/)
 
+[yarn cli](https://classic.yarnpkg.com/en/docs/cli/link)
+
 ## config - 配置
 
 ### 全局配置文件
@@ -163,10 +165,15 @@ yarn global add npm-check-updates
 
 # 更新包（yarn.lock和package.json同步更新）
 
-ncu --upgrade --upgradeAll && yarn upgrade
+# 查看所有更新
+ncu
+# 单包更新
+ncu -u axios
 ```
 
 ### upgrade-interactive
+
+> 版本管理存在问题
 
 ```shell
 yarn upgrade-interactive --latest
@@ -175,6 +182,8 @@ yarn upgrade-interactive --latest
 ```
 
 ### upgrade
+
+> 不好用
 
 ```shell
 yarn upgrade package@version
