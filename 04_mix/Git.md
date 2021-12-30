@@ -325,9 +325,13 @@ rebase：将分支**出发点**从 旧master 移动到 新master。
 
 - 将提交记录变为线性
 - 传统合并，master并分支新分支，合并冲突由 master处理。
-- 通过 新分支rebase，可以将冲突，交由 分支开发者处理。
+- 通过 新分支rebase，可以将冲突，交由 **分支开发者处理。**
 
 > 如果 master分支没有新记录，此时合并只会移动指针（`fast-forward`）
+
+```shell
+git rebase branch_name
+```
 
 ## pull - 拉取远端分支
 
@@ -343,6 +347,31 @@ git branch -d temp # 删除temp分支
 git pull origin ask:ask # 将远程ask请求到本地ask
 ```
 
+## checkout - 切换分支 | 还原
+
+切换分支，或 从历史还原部分文件
+
+```shell
+# 切换并创建
+git checkout -b daily/0.0.1
+
+# 利用缓存区文件覆盖物理文件
+git checkout 文件
+
+# 创建新分支（没有历史记录）
+git checkout --orphan new_branch
+
+# 交互式比较分支
+git checkout -p other_branch
+```
+
+```shell
+# 从本地库 HEAD 检出 demo.html 覆盖 当前工作区
+git checkout HEAD demo.html
+```
+
+>  `HEAD`（也可以是提交ID、分支名、Tag名）。省略 HEAD，从暂存区检出。
+
 ## reset - 重设
 
 当前分支重设（reset）到指定的 `<commit>` 或者 `HEAD`
@@ -356,6 +385,20 @@ git reset --mixed <commit>
 git reset --soft <commit>
 git reset --hard <commit>
 ```
+
+## revert - 撤销
+
+**撤销某次操作**，此次操作**之前和之后**的 `commit` 和 `history` 都会**保留**，并且把**这次撤销作为一次最新的提交**
+
+```shell
+git revert HEAD
+# 撤销前一次 提交
+git revert HEAD --no-edit
+# 撤销多次操作（不会每次都提交，最终提交一次）
+git revert -n HEAD
+```
+
+
 
 ## tag - 标签和版本管理
 
@@ -383,15 +426,6 @@ git reset --hard <commit>
 | `git clone -b [tag] [git_url]`       |              |
 
 ## other - 杂项命令
-
-### checkout 
-
-切换分支 或者 还原工作树文件
-
-```shell
- # 利用缓存区文件覆盖物理文件
- git checkout 文件
-```
 
 ### rm - 清除缓存区
 
@@ -442,6 +476,49 @@ git mv index.js Index.js
 # 生成zip
 git archive master --prefix='confict/' --format=zip > confict.zip
 ```
+
+### diff - 差异
+
+查看工作区、暂存区、本地版本库之间的文件差异
+
+### blame - 历史信息
+
+查看文件每行代码块的历史信息
+
+```shell
+git blame -L 1,10 demo.html
+```
+
+### submodule - 子模块
+
+通过 Git 子模块可以跟踪外部版本库，它允许在某一版本库中再存储另一版本库，并且能够**保持2个版本库完全独立**
+
+```shell
+# 添加子模块
+git submodule add https://github.com/gafish/demo.git demo
+# 更新子模块
+git submodule update demo
+```
+
+### gc - 垃圾回收
+
+运行Git的垃圾回收功能，清理冗余的历史快照
+
+```shell
+git gc
+```
+
+### git archive - 打包
+
+将加了tag的某个版本打包提取
+
+- `--format` ：打包格式
+
+```shell
+git archive -v --format=zip v0.1 > v0.1.zip
+```
+
+
 
 # Github
 
