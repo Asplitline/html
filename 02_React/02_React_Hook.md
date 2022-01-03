@@ -130,11 +130,32 @@ React 使用 [`Object.is` 比较算法](https://developer.mozilla.org/en-US/docs
 - 初次渲染后或者更新完成更新完成后 =>`DidMount + DidUpdate`
 - 清除函数 => `unMount`
 
-当依赖项是引用类型时，React 会对比当前渲染下的依赖项和上次渲染下的依赖项的内存地址是否一致，如果一致，effect 不会执行，只有当对比结果不一致时，effect 才会执行。
+### effect 依赖项
+
+#### 正确设置依赖项
+
+1. 依赖项数组中包含所有在 `effect` 中用到的值
+2. 修改 `effect` 中的代码来减少依赖项
+
+回调函数模式，可以不绑定依赖项
+
+```jsx
+const [count,setCount] = useState(0)
+
+useEffect(()=>{
+   const timer = setInterval(()=>{
+   	setcount((count) =>count + 1)
+   },1000)
+   return ()=> clearInterval(timer)
+},[])
+
+```
+
+
 
 ### effect 操作
 
-#### 不清除effect
+#### 不清除副作用
 
 **在 React 更新 DOM 之后运行一些额外的代码**
 
@@ -144,7 +165,7 @@ React 使用 [`Object.is` 比较算法](https://developer.mozilla.org/en-US/docs
 
 上述操作完成后，可以忽略，无需清除。
 
-**class**：副作用放在 `componentDidMount` 和 `componentDidUpdat`
+**class**：副作用放在 `componentDidMount` 和 `componentDidUpdate`
 
 实现初始化和更新，两个生命周期都需编写重复代码。
 
@@ -164,11 +185,8 @@ class Example extends React.Component {
 
 **hook**：react 会保存 effect 中函数，在 dom更新后调用。
 
-- `useEffect`在组件间内部访问，可以直接访问 state，props。
-
-- **`useEffect` 会在每次渲染后都执行**，每次渲染都会生产新的 effect。
-
-> 与 `componentDidMount` 或 `componentDidUpdate` 不同，使用 `useEffect` 调度的 effect 不会阻塞浏览器更新屏幕
+- `useEffect` 在组件间内部访问，可以直接访问 state，props。
+- `useEffect` **在每次渲染后都执行**，每次渲染都会生产新的 effect。
 
 ```jsx
 import React, { useState, useEffect } from 'react';
@@ -181,9 +199,46 @@ function Example() {
 }
 ```
 
-# https://mp.weixin.qq.com/s/PKLJnaygOTl9vmSq2GtExA
+不同点
 
-#### 清除effect
+1. 使用 `useEffect` 调度的 effect 不会阻塞浏览器更新屏幕，因为大多数 `useEffect` 函数不需要同步执行
+
+> `componentDidMount` 或 `componentDidUpdate` 会阻塞浏览器更新屏幕
+
+2. useEffect 每次渲染可以看作独立函数，接收props和state
+
+>  `componentDidMount` 中的 `this.state` 始终指向最新数据
+
+```jsx
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    setTimeout(() => {
+      console.log(`You clicked ${count} times`);
+    }, 3000);
+  });
+
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}
+```
+
+```jsx
+  componentDidUpdate() {
+    setTimeout(() => {
+      console.log(`You clicked ${this.state.count} times`);
+    }, 3000);
+  }
+```
+
+#### 清除副作用
 
 清除effect，防止内存泄露
 
@@ -228,10 +283,10 @@ class FriendStatus extends React.Component {
 
 **hook**
 
-effect 返回一个清除函数
+effect 返回一个清除函数。
 
-- 时机：组件卸载时执行清除操作
-- 多次渲染，在下一个effect执行前，上一个effect将被清除
+1. 组件卸载时执行清除操作
+2. **每次重新渲染**时清除
 
 ```jsx
 import React, { useState, useEffect } from 'react';
@@ -388,56 +443,59 @@ componentDidUpdate(prevProps, prevState) {
 
 - 全等比较，参数值相等，不调用effect
 - `[]`表示，不依赖 props和state，只在渲染时**执行一次**。
+- 依赖项是引用类型时，React 会比较两次内存地址。如果一致，effect 不会执行，只有当对比结果不一致时，effect 才会执行。
 
-```
+```jsx
 useEffect(() => {
   document.title = `You clicked ${count} times`;
 }, [count]); // 仅在 count 更改时更新
 ```
 
-> 确保数组中包含了**所有外部作用域中会随时间变化并且在 effect 中使用的变量**，否则你的代码会引用到先前渲染中的旧变量
+确保数组中包含了**所有外部作用域中会随时间变化并且在 effect 中使用的变量**，否则你的代码会引用到先前渲染中的旧变量
 
-- ```jsx
+```jsx
   import React, { useState, useEffect } from 'react';
-  ```
-
-function FriendStatus(props) {
-  const [isOnline, setIsOnline] = useState(null);
-
-  function handleStatusChange(status) {
-    setIsOnline(status.isOnline);
+  function FriendStatus(props) {
+    const [isOnline, setIsOnline] = useState(null);
+  
+    function handleStatusChange(status) {
+      setIsOnline(status.isOnline);
+    }
+  
+    useEffect(() => {
+      ChatAPI.subscribeToFriendStatus(props.friend.id, handleStatusChange);
+      return () => {
+        ChatAPI.unsubscribeFromFriendStatus(props.friend.id, handleStatusChange);
+      };
+    });
+  
+    if (isOnline === null) {
+      return 'Loading...';
+    }
+    return isOnline ? 'Online' : 'Offline';
   }
-
-  useEffect(() => {
-    ChatAPI.subscribeToFriendStatus(props.friend.id, handleStatusChange);
-    return () => {
-      ChatAPI.unsubscribeFromFriendStatus(props.friend.id, handleStatusChange);
-    };
-  });
-
-  if (isOnline === null) {
-    return 'Loading...';
-  }
-  return isOnline ? 'Online' : 'Offline';
-}
-
 ```
+
 ### effect 执行时机
 
 与 `componentDidMount`、`componentDidUpdate` 不同的是，传给 `useEffect` 的函数会**在浏览器完成布局与绘制之后**，在一个延迟事件中被调用，会保证在任何**新的渲染前**执行。
 
 在开始新的更新前，React 总会先清除上一轮渲染的 effect。
 
-一个对用户可见的 DOM 变更就必须在浏览器执行下一次绘制前被同步执行，这是useEffect无法办到的。React 为此提供了一个额外的 [`useLayoutEffect`](https://zh-hans.reactjs.org/docs/hooks-reference.html#uselayouteffect) Hook 
+useEffect缺陷：一个对用户可见的 DOM 变更就必须在浏览器执行下一次绘制前被同步执行。
+
+React 为此提供了一个额外的 [`useLayoutEffect`](#useLayoutEffect) Hook 
 
 ### effect 条件执行
 
-默认情况下，effect 会在每轮组件渲染完成后执行，一旦 effect 的**依赖发生变化**，它就会被**重新创建**。如果**不需要每次渲染都创建**，传递第二个参数
+默认情况下，effect 会在每轮组件渲染完成后执行，一旦 effect 的**依赖发生变化**，它就会被**重新创建**。
 
-参数：**所有外部作用域中会发生变化且在 effect 中使用的变量**，否则你的代码会引用到先前渲染中的旧变量。
+如果**不需要每次渲染都创建**，传递第二个参数
+
+参数保证以下两个原则，否则你的代码会引用到先前渲染中的旧变量。
 
 - 外部会变化
-- 内部在使用
+- effect内部在使用
 
 ```jsx
 useEffect(
@@ -841,7 +899,7 @@ FancyInput = forwardRef(FancyInput);
 
 ### useLayoutEffect
 
-会在所有的 **DOM 变更之后==同步==**调用 effect。使用它来**读取 DOM 布局并同步触发重渲染**，在**浏览器执行绘制之前**，`useLayoutEffect` 内部的更新计划将被同步刷新。
+会在所有的 **DOM 变更之后==同步==**调用 effect，在**浏览器执行绘制之前**，`useLayoutEffect` 内部的更新计划将被同步刷新。
 
 **问题**：服务端渲染， `useLayoutEffect` 和 `useEffect` 都**无法在 Javascript 代码加载完成之前执行**。
 

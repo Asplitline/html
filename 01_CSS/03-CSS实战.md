@@ -10,8 +10,6 @@
 
 [精灵图处理](http://www.spritecow.com/)
 
-# 应用
-
 ## CSS实现三角形
 
 - 宽度高度为0
