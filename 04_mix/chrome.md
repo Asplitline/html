@@ -156,6 +156,92 @@ source map 映射信息存在 json 对象中，保存在 .map 文件中
 
 snippets 中，选中代码并`ctrl enter`，或点击右下角的执行按钮，即可执行代码片段
 
+## network
+
+
+
+![](https://mmbiz.qpic.cn/mmbiz_png/emhicHiajiaiat3BEnUj6iarhKG37ibribYFxXfbRibLr0aFBibRiaWaw0xO09xpuq7yABwPiayJQ8v2ibZd9qCWwicAuSOJDAA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+
+- Preserve Log：保存显示跨页面的加载请求
+- Disable Cache：禁用浏览器缓存，模拟新用户打开页面的体验
+- Offline 是模拟断网离线的状态，其后的下拉框可以选择模拟其他网络状况，比如 2G,3G
+
+### filter
+
+filter 文本框中可输入请求的属性 对 请求进行过滤，多个属性**用空格**分隔
+
+支持过滤的属性：
+
+`domain`：**指定域**的资源。
+`has-response-header`：指定 HTTP **响应标头**的资源
+`is`： is:running 可以查找 WebSocket 资源。
+`larger-than`：**大于指定大小的资源**（以字节为单位）。1000 为 1k。
+`method`：指定 **HTTP 方法**资源
+`mime-type`：指定 **MIME 类型**的资源
+`mixed-content`：显示所有混合内容资源 (mixed-content:all)
+`scheme`：通过未保护 HTTP (scheme:http) 或受保护 HTTPS (scheme:https) 检索的资源。
+`set-cookie-domain`：具有 Set-Cookie 标头并且 Domain 属性与指定值匹配的资源
+`set-cookie-name`：具有 Set-Cookie 标头并且名称与指定值匹配的资源
+`set-cookie-value`：显示具有 Set-Cookie 标头并且值与指定值匹配的资源
+`status-code`： **HTTP 状态代码**与指定代码匹配的资源。
+
+> 例如：mime-type:image/gif larger-than:1K 显示大于一千字节的所有 GIF
+
+- `Hide Data URLs`：隐藏 **data 类型的 url**[1]
+
+`Data URLs` ：前缀为 data: 协议的的 URL。允许内容创建者向文档中嵌入小文件，例如浏览器 API canvas 支持的 base64 编码格式图片
+
+### 瀑布图
+
+瀑布图按时间线展示所有请求
+
+`DOMContentLoaded`： 浏览器已经加载了 HTML，DOM树已经构建完毕，**资源还未下载**
+
+`load`：浏览器已经加载了所有的资源（图像，样式表等）。
+
+`beforeunload/unload`：当用户离开页面的时候触发。
+
+
+
+### 网络请求列表
+
+`Replay XHR`：重播请求
+
+`Copy As Fetch`：请求**复制为 Fetch 代码** 
+
+`Clear Browser Cache`：手动清除浏览器缓存
+
+`Clear Browser Cookies`：手动清除浏览器 Cookie
+
+![](https://mmbiz.qpic.cn/mmbiz_png/emhicHiajiaiat3BEnUj6iarhKG37ibribYFxXfJEoJibZwAcu7vD8wXvT6Lic9404Vnxda7icQEBibwReM3oVibicSy61icRt6Q/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+
+`Initiator`：请求的来源/发起者。
+
+`parser`：一般来自解析器解析到的 html 页面内的请求
+
+`script`：来自脚本文件的请求。鼠标悬浮到 Initiator 列中的文件名上，可以看到发起当前请求的堆栈轨迹，点击文件名，可以定位到直接发起请求的代码
+
+`size`：在 size 列中，有两个数值，上面的较小值代表下载到的资源的大小，下面的较大值是资源解压后的大小。
+
+**按住`shift`鼠标悬浮在请求行上**
+
+- 绿色：当前行的发起者
+- 红色：当前行的依赖项
+
+### websocket
+
+![](https://mmbiz.qpic.cn/mmbiz_png/emhicHiajiaiat3BEnUj6iarhKG37ibribYFxXfenTmB77a2sJeZ1GPibWUJHS3euxHVz5ekwiaJDRiauJnkd3ZClMNr2j3g/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+
+## Performance
+
+performance 面板可以用于**分析运行时性能**。与页面加载性能相区分
+
+[参考](https://mp.weixin.qq.com/s?__biz=MzA5NjM5MjM1Nw==&mid=2650284189&idx=1&sn=6bf640e28cf02097b73e5885d750cde8&chksm=88bc4557bfcbcc41e792cf7b11b7c19b610cd3eb5f35808066489889286319161f6466776a68&cur_album_id=1349545506497855489&scene=189#wechat_redirect)
+
+## Memory 内存
+
+[参考](https://mp.weixin.qq.com/s?__biz=MzA5NjM5MjM1Nw==&mid=2650284228&idx=1&sn=d0ca8b3476ad8ba891dba9c5468ee1fb&chksm=88bc450ebfcbcc18339aa4272997ec85dca736553c40c6af67e47a2faa5e954047b13f8558cb&cur_album_id=1349545506497855489&scene=189#wechat_redirect)
+
 ## 快速查看页面结构
 
 ```js
