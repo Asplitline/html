@@ -717,6 +717,19 @@ fatal: fetch-pack: invalid index-pack output
 git config --global http.postBuffer 524288000
 ```
 
+## remote: HTTP Basic: Access denied
+
+```bash
+fatal: Custom certificate bundle not found at path: D:/Git/mingw64/ssl/certs/ca-bundle.crt
+fatal: Custom certificate bundle not found at path: D:/Git/mingw64/ssl/certs/ca-bundle.crt
+```
+
+```bash
+git config --global http.sslVerify false
+```
+
+
+
 # 快捷键
 
 | 快捷键    | 说明                   |
