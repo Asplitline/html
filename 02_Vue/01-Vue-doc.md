@@ -1175,6 +1175,27 @@ this.$refs.usernameInput
 
 > `$ref` 组件渲染完成之后生效，并且**不是响应式**
 
+ref 补充
+
+1. 普通元素中：$refs 获取的是dom元素
+2. 组件中：$refs 获取的是组件实例，通过 \$el获取组件元素
+
+```vue
+<Demo ref="demo"></Demo>
+<div ref="divDemo">123</div>
+```
+
+```js
+console.log(this.$refs.demo)
+// VueComponent {_uid: 2, _isVue: true, $options: {…}, _renderProxy: Proxy, _self: VueComponent, …}
+console.log(this.$refs.demo.$el)
+// <div class="demo">12313</div>
+console.log(this.$refs.divDemo)
+// <div ref="divDemo">123</div>
+```
+
+
+
 ### 依赖注入
 
 `provide` 选项允许我们指定我们想要**提供**给后代组件的数据/方法

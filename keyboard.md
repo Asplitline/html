@@ -150,56 +150,62 @@ x^2^  x~2~
 | dir   | 显示目录   |
 | mv    | 改名     |
 
-# vscode
+# Vscode
 
-> `openInTerminal`： 以当前文件打开终端
+自定义代码折叠区域
 
-| 按键                                | 功能                               |
-|:---------------------------------:|:--------------------------------:|
-| Ctrl+P                            | 打开文件                             |
-| Ctrl+B                            | 侧栏                               |
-| Ctrl+Shift+[ **\|** ]             | 折叠/展开代码块（当前）                     |
-| Ctrl+K  【Ctrl+0 **\|** Ctrl+J 】   | 折叠/展开所有代码                        |
-| Shift+Alt+F                       | 格式化代码                            |
-| Shift+Alt+A                       | 块注释                              |
-| Ctrl + G                          | 行跳转                              |
-| Ctrl + D                          | 多次触发后，在所有相同文字后追加光标               |
-| **Ctrl + Shift + L**              | **选中文本的所有相同内容处，出现光标**            |
-| Alt + Shift + i                   | 所选文本末尾追加光标                       |
-| Alt + 鼠标左键                        | 选中状态                             |
-| **Ctrl + Alt + 上下键**              | **连续的多列上，同时出现光标（与Alt + 鼠标左键等效）** |
-| **Ctrl + Shift + P**              | **命令面板**                         |
-| Ctrl + \                          | 分屏                               |
-| Ctrl + 数字                         | 分屏切换                             |
-| Ctrl + J                          | 显示控制台                            |
-| Ctrl + Shift + N/W                | 新开软件窗口/关闭软件窗口                    |
-| **Ctrl + Shift + \\**             | **跳转到匹配括号**                      |
-| Ctrl + Pagedown/Pageup            | 文件间切换                            |
-| **Ctrl + 左右键**                    | **单词间移动**                        |
-| **Ctrl + Backspace/delete**       | **删除前一个单词/后一个单词**                |
-| Ctrl + Shift + F                  | 全局搜索                             |
-| Ctrl + P                          | 全局搜索文件名                          |
-| Ctrl/Shift + F12                  | 查看声明/查看调用（Ctrl + 鼠标左键 同效）        |
-| Ctrl + Shift + E 或 **Ctrl+Q**     | **聚焦到侧边栏**                       |
-| **Ctrl + Shfit + H **或  Ctrl + QQ | **全局搜索**                         |
-| **Ctrl + KS**                     | **快捷键**                          |
-| Alt + Z                           | 自动换行                             |
-| **Ctrl + R**                      | **切换工作区**                        |
-| F8                                | 钜桥下一个错误                          |
-| **Ctrl + Tab**                    | **切换Tab**                        |
-| **Ctrl + F2**                     | **选中所有匹配项**                      |
-| **F12**                           | **转到定义**                         |
-| **Alt + F12**                     | **查看定义**                         |
-| **Ctrl + KX**                     | **减去末尾空格**                       |
-| Ctrl + ED                         | 打开文件夹（自定义）                       |
-| Ctrl + KR                         | 快捷键pdf                           |
-| Ctrl + Shift + H                  | 替换文件                             |
-| Ctrl + KZ                         | 禅模式（自定义）                         |
-| **Alt + Shift + arrowRight**      | **选中括号间文本**                      |
-| **Ctrl + p** 输入@                  | **符号导航**                         |
-| Ctrl + shift + leftclick          | 新开页面转到定义                         |
-| Ctrl + shift + \                  | 跳转到匹配括号                          |
-| **Alt  + 左右**                     | 上次/下次光标位置                        |
+```js
+//#region 
+//#endregion 
+```
+
+|                按键                |                          功能                          |
+| :--------------------------------: | :----------------------------------------------------: |
+|               Ctrl+P               |                        打开文件                        |
+|               Ctrl+B               |                          侧栏                          |
+|       Ctrl+Shift+[ **\|** ]        |                折叠/展开代码块（当前）                 |
+| Ctrl+K  【Ctrl+0 **\|** Ctrl+J 】  |                   折叠/展开所有代码                    |
+|            Shift+Alt+F             |                       格式化代码                       |
+|            Shift+Alt+A             |                         块注释                         |
+|              Ctrl + G              |                         行跳转                         |
+|              Ctrl + D              |          多次触发后，在所有相同文字后追加光标          |
+|        **Ctrl + Shift + L**        |         **选中文本的所有相同内容处，出现光标**         |
+|          Alt + Shift + i           |                  所选文本末尾追加光标                  |
+|           Alt + 鼠标左键           |                        选中状态                        |
+|      **Ctrl + Alt + 上下键**       | **连续的多列上，同时出现光标（与Alt + 鼠标左键等效）** |
+|        **Ctrl + Shift + P**        |                      **命令面板**                      |
+|              Ctrl + \              |                          分屏                          |
+|            Ctrl + 数字             |                        分屏切换                        |
+|              Ctrl + J              |                       显示控制台                       |
+|         Ctrl + Shift + N/W         |               新开软件窗口/关闭软件窗口                |
+|       **Ctrl + Shift + \\**        |                   **跳转到匹配括号**                   |
+|       Ctrl + Pagedown/Pageup       |                       文件间切换                       |
+|         **Ctrl + 左右键**          |                     **单词间移动**                     |
+|    **Ctrl + Backspace/delete**     |             **删除前一个单词/后一个单词**              |
+|          Ctrl + Shift + F          |                        全局搜索                        |
+|              Ctrl + P              |                     全局搜索文件名                     |
+|          Ctrl/Shift + F12          |       查看声明/查看调用（Ctrl + 鼠标左键 同效）        |
+|   Ctrl + Shift + E 或 **Ctrl+Q**   |                    **聚焦到侧边栏**                    |
+| **Ctrl + Shfit + H **或  Ctrl + QQ |                      **全局搜索**                      |
+|           **Ctrl + KS**            |                       **快捷键**                       |
+|              Alt + Z               |                        自动换行                        |
+|            **Ctrl + R**            |                     **切换工作区**                     |
+|                 F8                 |                     钜桥下一个错误                     |
+|           **Ctrl + Tab**           |                      **切换Tab**                       |
+|           **Ctrl + F2**            |                   **选中所有匹配项**                   |
+|              **F12**               |                      **转到定义**                      |
+|           **Alt + F12**            |                      **查看定义**                      |
+|           **Ctrl + KX**            |                    **减去末尾空格**                    |
+|             Ctrl + ED              |                  打开文件夹（自定义）                  |
+|             Ctrl + KR              |                       快捷键pdf                        |
+|          Ctrl + Shift + H          |                        替换文件                        |
+|             Ctrl + KZ              |                    禅模式（自定义）                    |
+|    **Alt + Shift + arrowRight**    |                   **选中括号间文本**                   |
+|         **Ctrl + p** 输入@         |                      **符号导航**                      |
+|      Ctrl + shift + leftclick      |                    新开页面转到定义                    |
+|          Ctrl + shift + \          |                     跳转到匹配括号                     |
+|          **Alt  + 左右**           |                   上次/下次光标位置                    |
+|            **Alt + Q**             |                   以当前文件打开终端                   |
 
 # PhotoShop
 

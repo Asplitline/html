@@ -2,13 +2,36 @@
 
 **Hook 使你在无需修改组件结构的情况下复用状态逻辑。**
 
-> **完全可选，向后兼容**
-> 
-> hook 在 class内部不起作用
+- **完全可选，向后兼容**
 
-==**启用 Hook，所有 React 相关的 package 都必须升级到 16.8.0 或更高版本**。==
+- hook 在 class内部不起作用
 
-==[React Native 0.59](https://reactnative.dev/blog/2019/03/12/releasing-react-native-059) 及以上版本支持 Hook==
+启用 Hook，所有 React 相关的 package 都必须升级到 16.8.0 或更高版本。
+
+[React Native 0.59](https://reactnative.dev/blog/2019/03/12/releasing-react-native-059) 及以上版本支持 Hook
+
+## 背景
+
+### Class 组件的不足
+
+- **难以复用组件间状态逻辑**：组件状态逻辑的复用，需要 **props render**和**高阶组件**等解决方案，但是此类解决方案的抽象封装将会导致层级冗余，形成“嵌套地狱”
+
+- **难以维护复杂组件**：
+
+- - 不相干逻辑代码被混杂在同一个生命周期中，相关逻辑代码被拆分到不同声明周期
+  - 不能拆分为更小的粒度，可通过状态管理库集中管理状态，但耦合了状态管理库又会导致组件复用性降低
+
+- **this 指向问题**：在 JavaScript 中，class 的方法默认不会绑定 this
+
+- **难以对 class 进行编译优化**：由于 JavaScript 历史设计原因，使用 class 组件会让组件预编译过程中变得难以进行优化，如 class 不能很好压缩，并且会使热重载出现不稳定的情况
+
+### Hook 优势
+
+- **自定义 Hook**：无需改变组件结构的情况下复用状态逻辑
+- **更小拆分**：Hook 将组件中互相关联的部分拆分成更小的函数
+- React特性：Hook 使你在非 class 的情况下可以使用更多的 React 特性
+
+
 
 ## State hook
 
@@ -18,41 +41,36 @@
 
 state 只在首次渲染时创建初始化，下一次直接使用
 
-- 参数 （唯一）：初始值。在第一次渲染调用
-- 返回值：返回一对值`[state,setState]`，当前 state 以及更新 state 的函数
+- 参数 ：初始值。（唯一）
+- 返回值：返回当前 state 以及更新 state 的函数`[state,setState]`，
+- 执行时机：在**第一次渲染**调用
 
-> **不会自动合并更新对象**
+```jsx
+const [state, setState] = useState(initialState);
+```
 
 ### 声明state
 
-#### class
-
-this.state
+class：在构造函数中声明`this.state`
 
 ```jsx
-class Example extends React.Component {
-  constructor(props) {
+constructor(props) {
     super(props);
     this.state = {count: 0};
-  }
-```
-
-#### hook
-
-**默认初始化**
-
-```jsx
-import React, { useState } from 'react';
-
-function Example() {
-  // 声明一个叫 “count” 的 state 变量
-  const [count, setCount] = useState(0);
 }
 ```
 
-**惰性初始化**
+hook：useState
 
-初始 state 需要通过复杂计算获得，则可以传入一个函数，在函数中计算并返回初始的 state，此函数**只会在初始渲染时被调用**
+1. 默认初始化：直接赋值
+
+```jsx
+const [count, setCount] = useState(0);
+```
+
+2. 惰性初始化：初始 state 需要通过复杂计算获得，则可以传入一个函数，在函数中计算并返回初始的 state
+
+   执行时机：只会在**初始渲染时**被调用
 
 ```jsx
 const initCounter = () => {
@@ -64,27 +82,21 @@ const [counter, setCounter] = useState(initCounter);
 
 ### 读取state
 
-#### class
-
-this.state
+class：通过 `this.state`
 
 ```jsx
-  <p>You clicked {this.state.count} times</p>
+<p>You clicked {this.state.count} times</p>
 ```
 
-#### hook
-
-state
+hook：useState 第一个返回值
 
 ```jsx
-  <p>You clicked {count} times</p>
+<p>You clicked {count} times</p>
 ```
 
 ### 更新state
 
-#### class
-
-**会自动合并更新对象**
+class：**会自动合并更新对象**
 
 ```jsx
  <button onClick={() => this.setState({ count: this.state.count + 1 })}>
@@ -92,23 +104,40 @@ state
  </button>
 ```
 
-#### hook
+hook：**不会自动合并更新对象**
 
-直接赋值
+1. 直接更新
 
 ```jsx
 <button onClick={() => setCount(count + 1)}> Click me </button>
 ```
 
-函数式更新
-
-往 `setState` 传递函数，该函数将接收先前的 state，并返回一个更新后的值
+2. 函数式更新：往 `setState` 传递函数，该函数将接收先前的 state，并返回一个更新后的值
 
 ```jsx
 <button onClick={() => setCount(prevCount => prevCount - 1)}>-</button>
 ```
 
-React 使用 [`Object.is` 比较算法](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is#Description) 来比较 state，相等会React 将跳**过子组件的渲染及 effect 的执行**。
+3. 跳过更新：React 使用 `Object.is` 来比较 state，返回true，会React 将跳**过子组件的渲染及 effect 的执行**。
+
+```jsx
+export default function Counter() {
+  console.log('render Counter');
+  const [counter, setCounter] = useState({
+    name: '计时器',
+    number: 0
+  });
+
+  // 修改状态时传的状态值没有变化，则不重新渲染
+  return (
+    <div>
+      <p>{counter.name}: {counter.number}</p>
+      <button onClick={() => setCounter({ ...counter, number: counter.number + 1})}>+</button>
+      <button onClick={() => setCounter(counter)}>++</button>
+    </div>
+  );
+}
+```
 
 ## Effect Hook
 
@@ -123,18 +152,22 @@ React 使用 [`Object.is` 比较算法](https://developer.mozilla.org/en-US/docs
 - 参数：包含副作用代码的函数
 - 返回值：返回一个清除函数，用来清除副作用
 - 组件内声明：可以访问到  state 和 props
-- 执行时机：在浏览器完成布局和绘制之后，下一次重新渲染之前执行
+- 执行时机：在浏览器完成**布局和绘制之后**，下一次**重新渲染之前**执行
 
 与生命周期的对比
 
-- 初次渲染后或者更新完成更新完成后 =>`DidMount + DidUpdate`
+- 初次渲染后或更新完成后 =>`DidMount + DidUpdate`
 - 清除函数 => `unMount`
 
 ### effect 依赖项
 
-#### 正确设置依赖项
+默认：effect 会在**每一次**组件渲染完成后执行。
 
-1. 依赖项数组中包含所有在 `effect` 中用到的值
+依赖项：`useEffect` 第二参数， effect 所依赖的值数组，当数组**值变化**才会重新渲染
+
+正确设置依赖项
+
+1. 确保数组中包含了**所有**外部作用域中**会发生变化**且在 effect 中**使用的变量**
 2. 修改 `effect` 中的代码来减少依赖项
 
 回调函数模式，可以不绑定依赖项
@@ -151,19 +184,17 @@ useEffect(()=>{
 
 ```
 
-
-
 ### effect 操作
 
 #### 不清除副作用
 
 **在 React 更新 DOM 之后运行一些额外的代码**
 
+下述操作完成后，无需清除。
+
 - 网络请求
 - 手动变更DOM
 - 记类日志
-
-上述操作完成后，可以忽略，无需清除。
 
 **class**：副作用放在 `componentDidMount` 和 `componentDidUpdate`
 
@@ -185,8 +216,8 @@ class Example extends React.Component {
 
 **hook**：react 会保存 effect 中函数，在 dom更新后调用。
 
-- `useEffect` 在组件间内部访问，可以直接访问 state，props。
-- `useEffect` **在每次渲染后都执行**，每次渲染都会生产新的 effect。
+- 作用域：在组件间内部访问，可以直接访问 state，props。
+- 执行：**在每次渲染后都执行**，每次渲染都会生产新的 effect。
 
 ```jsx
 import React, { useState, useEffect } from 'react';
@@ -199,7 +230,7 @@ function Example() {
 }
 ```
 
-不同点
+effect和class声明周期对比
 
 1. 使用 `useEffect` 调度的 effect 不会阻塞浏览器更新屏幕，因为大多数 `useEffect` 函数不需要同步执行
 
@@ -244,7 +275,7 @@ function Counter() {
 
 - 订阅外部数据
 
-**class**：`componentDidMount` 中设置订阅，并在 `componentWillUnmount` 中清除它
+**class**：`componentDidMount` 中设置订阅，并在 `componentWillUnmount`中清除
 
 ```jsx
 class FriendStatus extends React.Component {
@@ -281,9 +312,7 @@ class FriendStatus extends React.Component {
 }
 ```
 
-**hook**
-
-effect 返回一个清除函数。
+**hook**：effect 返回一个清除函数。
 
 1. 组件卸载时执行清除操作
 2. **每次重新渲染**时清除
@@ -546,9 +575,11 @@ npm install eslint-plugin-react-hooks --save-dev
 
 组件之间**重用**一些状态逻辑。
 
-三种解决方案：：[高阶组件](https://zh-hans.reactjs.org/docs/higher-order-components.html)和 [render props](https://zh-hans.reactjs.org/docs/render-props.html)，自定义hook
+逻辑重用解决方案：：[高阶组件](https://zh-hans.reactjs.org/docs/higher-order-components.html)和 [render props](https://zh-hans.reactjs.org/docs/render-props.html)，自定义hook
 
-函数的名字以 “`use`” 开头并调用其他 Hook，我们就说这是一个自定义 Hook
+
+
+自定义Hook：函数以 “`use`” 开头并调用其他 Hook
 
 - 以 `use`开头，React会自动进行规则检测
 - 自定义`hook`间，state 独立
@@ -645,27 +676,17 @@ function Todos() {
 
 ### useContext
 
-**useContext**：读取 `context` 的值以及订阅 `context` 的变化，需要在上层组件树使用`<MyContext.Provider>` 来为下层组件*提供* `context`
+作用：无需为每层组件手动添加props，就能传递数据
 
-- 接收一个`context`对象（`React.createContext`的返回值）
-- 返回`context` 当前值
-- 值由最近上层组件 `MyContext.Provider` 决定
+**useContext**：订阅上层context变更，获取上层context `value` prop
 
-上层最近的 `<MyContext.Provider>` 更新时，该 Hook 会**触发重渲染**，并使用最新传递给 `MyContext` provider 的 context `value` 值。
-
-> 即使祖先使用 [`React.memo`](https://zh-hans.reactjs.org/docs/react-api.html#reactmemo) 或 [`shouldComponentUpdate`](https://zh-hans.reactjs.org/docs/react-component.html#shouldcomponentupdate)，也会在组件本身使用 `useContext` 时重新渲染。
-
-==useContext：参数必须为context对象本身==
-
-==调用了 **useContext** 的组件总会在 context 值变化时重新渲染。==可以 [通过使用 memoization 来优化](https://github.com/facebook/react/issues/15156#issuecomment-474590693)。
-
-#### 语法
+- 参数：接收一个`context`对象（`React.createContext`的返回值）
+- 返回：`context` 当前值
+- 取值：最近上层组件  `<MyContext.Provider>` 的 `value` prop 决定
 
 ```jsx
 const value = useContext(MyContext);
 ```
-
-#### 案例
 
 ```jsx
 const themes = {
@@ -707,21 +728,113 @@ function ThemedButton() {
 }
 ```
 
-### useReducer
+#### 优化useContext
 
-**useReducer** ：通过 reducer 来管理组件本地的复杂 state。
+`useContext` 的组件都会在 context 值变化时重新渲染，减少重新渲染组件的较大开销，可以通过使用 [memoization](https://github.com/facebook/react/issues/15156#issuecomment-474590693) 来优化
+
+1. 拆分不会一起更改的 context
+
+```jsx
+function Button() {
+  // 把 theme context 拆分出来，其他 context 变化时不会导致 ExpensiveTree 重新渲染
+  let theme = useContext(ThemeContext);
+  return <ExpensiveTree className={theme} />;
+}
+```
+
+2. 不能拆分 context 时，将组件一分为二，给中间组件加上 `React.memo`
+
+```jsx
+function Button() {
+  let appContextValue = useContext(AppContext);
+  let theme = appContextValue.theme; // 获取 theme 属性
+  return <ThemedButton theme={theme} />
+}
+
+const ThemedButton = memo(({ theme }) => {
+  // 使用 memo 尽量复用上一次渲染结果
+  return <ExpensiveTree className={theme} />;
+});
+```
+
+3. 返回一个内置 `useMemo` 的组件
+
+```jsx
+function Button() {
+  let appContextValue = useContext(AppContext);
+  let theme = appContextValue.theme; // 获取 theme 属性
+
+  return useMemo(() => {
+    // The rest of your rendering logic
+    return <ExpensiveTree className={theme} />;
+  }, [theme])
+}
+```
+
+**注意**：即使祖先使用 [`React.memo`](https://zh-hans.reactjs.org/docs/react-api.html#reactmemo) 或 [`shouldComponentUpdate`](https://zh-hans.reactjs.org/docs/react-component.html#shouldcomponentupdate)，也会在组件本身使用 `useContext` 时重新渲染。
+
+#### 与class对比
+
+hook：`useContext(MyContext)`
+
+class：`static contextType = MyContext` 或者 `<MyContext.Consumer>`
+
+```jsx
+const ThemeContext = React.createContext(themes.light);
+
+function ThemeButton() {
+  return (
+    <ThemeContext.Consumer>
+      {
+        ({theme, toggleTheme}) => (
+          <button style={{background: theme.background, color: theme.foreground }} onClick={toggleTheme}>
+            Change the button's theme
+          </button>
+        )
+      }
+    </ThemeContext.Consumer>
+  );
+}
+
+export default class Toolbar extends React.Component {
+  constructor(props) {
+    super(props);
+    
+    this.state = {
+      theme: themes.light
+    };
+
+    this.toggleTheme = this.toggleTheme.bind(this);
+  }
+
+  toggleTheme() {
+    this.setState(state => ({
+      theme:
+        state.theme === themes.dark
+          ? themes.light
+          : themes.dark
+    }));
+  }
+
+  render() {
+    return (
+      <ThemeContext.Provider value={{ theme: this.state.theme, toggleTheme: this.toggleTheme }}>
+        <ThemeButton />
+      </ThemeContext.Provider>
+    )
+  }
+}
+```
+
+### useReducer
 
 useState 替代方案，适合逻辑更复杂且包含多个子值，下一个state依赖前一个state等
 
-使用 useReducer 会触发深更新的组件做性能优化，==你可以向子组件传递 **dispatch** 而不是回调函数 。==
-
-#### 语法
+使用 useReducer 会触发深更新的组件做性能优化，**你可以向子组件传递 dispatch而不是回调函数 **
 
 ```jsx
 const [state, dispatch] = useReducer(reducer, initialArg, init);
 ```
-
-#### 案例
 
 ```jsx
 const initialState = {count: 0};
@@ -751,7 +864,7 @@ function Counter() {
 
 #### 初始化 state
 
-##### 默认初始化 - 第二参数
+1. 默认初始化 - 第二参数
 
 ```jsx
   const [state, dispatch] = useReducer(
@@ -764,11 +877,11 @@ React 不使用 `state = initialState` 这一由 Redux 推广开来的参数约�
 
 原因：有时候初始值依赖于 props，因此需要在调用 Hook 时指定。
 
-模拟 Redux 的行为，使用上述的参数约定，可以通过调用 `useReducer(reducer, undefined, reducer)` 
+> 通过调用 `useReducer(reducer, undefined, reducer)` 模拟 Redux 的行为
 
-##### 惰性初始化 - 第三参数
+2. 惰性初始化 - 第三参数
 
-将 `init` 函数作为 `useReducer` 的第三个参数传入，这样初始 state 将被设置为 `init(initialArg)`
+将 `init` 函数作为 `useReducer` 的第三个参数传入，等效为`init(initialCount)`
 
 ```jsx
 function init(initialCount) {
@@ -815,7 +928,7 @@ React 可能仍需要在跳过渲染前再次渲染该组件，但不会对组�
 
 内联回调函数及依赖项数组作为参数传入 `useCallback`，**回调函数仅在某个依赖项改变时才会更新**。
 
-- ==返回一个 [memoized](https://en.wikipedia.org/wiki/Memoization) 回调函数==
+- 返回：一个 [memoized](https://en.wikipedia.org/wiki/Memoization) **回调函数**
 
 ```jsx
 const memoizedCallback = useCallback(
@@ -830,13 +943,23 @@ const memoizedCallback = useCallback(
 
 `useCallback(fn, deps)` 相当于 `useMemo(() => fn, deps)`
 
+```jsx
+const handleAdd = useCallback(() => {
+  setCount2(count2 + 1);
+}, [count2]);
+
+const handleAdd = useMemo(() => {
+  return () => setCount2(count2 + 1);
+}, [count2]);
+```
+
 ### useMemo
 
 把“创建”函数和依赖项数组作为参数传入 `useMemo`，在某个依赖项改变时才重新计算 memoized 值。
 
-- ==返回一个 [memoized](https://en.wikipedia.org/wiki/Memoization) 值==
-- 传入 `useMemo` 函数渲染期间执行，不要执行 副作用操作
-- 性能优化手段，而非语义上的保证
+- 返回：一个 [memoized](https://en.wikipedia.org/wiki/Memoization) **值**
+- 执行时机：渲染期间执行，不要执行副作用操作
+- 没有提供依赖项，每次都会计算
 
 ```jsx
 const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
@@ -846,10 +969,8 @@ const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
 
 ### useRef
 
-`useRef` 返回一个可变的 ref 对象，`current` 属性为 传入的元素。返回的 ref 对象在组件的**整个生命周期内持续存在**
+`useRef` 返回一个可变的 ref 对象，返回的 ref 对象在组件的**整个生命周期内持续存在**。
 
-- **可变**：将 ref 对象以 `<div ref={myRef} />` 形式传入组件，则无论该节点如何改变，React 都会将 ref 对象的 `.current` 属性设置为相应的 DOM 节点
-- **区别**：`useRef()` 和自建一个 `{current: ...}` 对象的唯一区别是，`useRef` 会在每次渲染时返回同一个 ref 对象。
 - ref 对象内容发生变化时，`useRef` 并*不会*通知你，在 React 绑定或解绑 DOM 节点的 ref 时运行某些代码，则需要使用[回调 ref](https://zh-hans.reactjs.org/docs/hooks-faq.html#how-can-i-measure-a-dom-node) 来实现。
 
 ```js
@@ -872,15 +993,71 @@ function TextInputWithFocusButton() {
 }
 ```
 
+#### 绑定DOM
+
+将 ref 对象以 `<div ref={myRef} />` 形式传入组件，则无论该节点如何改变，React 都会将 ref 对象的 `.current` 属性设置为相应的 DOM 节点
+
+```jsx
+import React, { useRef } from 'react'
+
+export default function FocusButton() {
+  const inputEl = useRef(null);
+  const onButtonClick = () => {
+    inputEl.current.focus();
+  };
+
+  return (
+    <>
+      <input ref={inputEl} type="text" />
+      <button onClick={onButtonClick}>Focus the input</button>
+    </>
+  );
+}
+```
+
+#### 绑定可变值
+
+`useRef` 创建的 ref 对象同时可以用于绑定任何可变值，通过手动给该对象的`.current` 属性设置对应的值即可
+
+**区别**：`useRef()` 和自建一个 `{current: ...}` 对象的唯一区别是，`useRef` 会在每次渲染时返回同一个 ref 对象。
+
+```jsx
+export default function Counter() {
+  const [count, setCount] = useState(0);
+
+  const currentCount = useRef();
+  // 使用 useEffect 获取当前 count
+  useEffect(() => {
+    currentCount.current = count;
+  }, [count]);
+
+  const alertCount = () => {
+    setTimeout(() => {
+      alert(`Current count is: ${currentCount.current}, Real count is: ${count}`);
+    }, 3000);
+  }
+
+  return (
+    <>
+      <p>count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Count add</button>
+      <button onClick={alertCount}>Alert current Count</button>
+    </>
+  );
+}
+```
+
+
+
 ### useImperativeHandle
 
 `useImperativeHandle` ：在使用 `ref` 时**自定义暴露给父组件的实例值**。
 
+`useImperativeHandle` 应当与 [`forwardRef`](https://zh-hans.reactjs.org/docs/react-api.html#reactforwardref) 一起使用
+
 ```jsx
 useImperativeHandle(ref, createHandle, [deps])
 ```
-
-`useImperativeHandle` 应当与 [`forwardRef`](https://zh-hans.reactjs.org/docs/react-api.html#reactforwardref) 一起使用
 
 ```jsx
 function FancyInput(props, ref) {
@@ -899,11 +1076,15 @@ FancyInput = forwardRef(FancyInput);
 
 ### useLayoutEffect
 
-会在所有的 **DOM 变更之后==同步==**调用 effect，在**浏览器执行绘制之前**，`useLayoutEffect` 内部的更新计划将被同步刷新。
+ `useEffect`：  layout 和 painting **完成后异步**执行 effect 
 
-**问题**：服务端渲染， `useLayoutEffect` 和 `useEffect` 都**无法在 Javascript 代码加载完成之前执行**。
+`useLayoutEffect`：layout 之后，painting **之前同步**执行 effect
 
-**解决**：要从服务端渲染 中排除依赖布局 effect 组件，使用 `showChild && <Child />` 进行条件渲染，并使用 `useEffect(() => { setShowChild(true); }, [])` 延迟展示组件。
+> layout：浏览器布局，painting：浏览器绘制
+
+服务端渲染存在问题：`useLayoutEffect` 和 `useEffect` 都**无法在 Javascript 代码加载完成之前执行**。
+
+**解决**：要从服务端渲染 中排除依赖布局 effect 组件，使用 `showChild && <Child />` 进行条件渲染，并使用 `useEffect(() => { setShowChild(true); }, [])` **延迟展示组件**。
 
 ### useDebugValue
 
