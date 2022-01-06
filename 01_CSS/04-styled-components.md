@@ -4,8 +4,6 @@
 
 ## 安装
 
-
-
 ```bash
 # with npm
 npm install --save styled-components
