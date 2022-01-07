@@ -14,16 +14,41 @@
 
 ### Class 组件的不足
 
-- **难以复用组件间状态逻辑**：组件状态逻辑的复用，需要 **props render**和**高阶组件**等解决方案，但是此类解决方案的抽象封装将会导致层级冗余，形成“嵌套地狱”
+**难以对 class 进行编译优化**：由于 JavaScript 历史设计原因，使用 class 组件会让组件预编译过程中变得难以进行优化，如 class 不能很好压缩，并且会使热重载出现不稳定的情况
 
-- **难以维护复杂组件**：
+**难以复用组件间状态逻辑** - 代码冗余
 
-- - 不相干逻辑代码被混杂在同一个生命周期中，相关逻辑代码被拆分到不同声明周期
-  - 不能拆分为更小的粒度，可通过状态管理库集中管理状态，但耦合了状态管理库又会导致组件复用性降低
+- 组件状态逻辑的复用，需要 **props render**和**高阶组件**等解决方案，造成层级冗余，嵌套地狱
 
-- **this 指向问题**：在 JavaScript 中，class 的方法默认不会绑定 this
+**难以维护复杂组件** - 逻辑混乱
 
-- **难以对 class 进行编译优化**：由于 JavaScript 历史设计原因，使用 class 组件会让组件预编译过程中变得难以进行优化，如 class 不能很好压缩，并且会使热重载出现不稳定的情况
+- 不同逻辑混杂在同一生命周期，相同逻辑却在不同生命周期
+- ==？组件常常充斥着状态逻辑的访问和处理，不能拆分为更小的粒度，可通过状态管理库集中管理状态，但耦合了状态管理库又会导致组件复用性降低==
+
+**this 指向问题** - 需手动绑定this
+
+- class 的方法默认不会绑定 this， this值为 undefined。方法中访问 this 则必须**在构造器中绑定**或**使用 class fields 语法**（实验性语法）
+
+```jsx
+class Example extends React.Component {
+ constructor(props) {
+  ...
+  // 方式1: 在构造函数中绑定 this
+  this.handleClick = this.handleClick.bind(this);
+ }
+ handleClick() {
+  this.setState({...})
+ }
+ 
+ // 方式2: 使用 class fields 语法
+ handleClick = () => {
+  this.setState({...})
+ }
+}
+```
+
+- **难以对 class 进行编译优化** - 难以优化
+  - 由于 JavaScript 历史设计原因，使用 class 组件会让组件预编译过程中变得难以进行优化，如 class 不能很好的压缩，并且会使热重载出现不稳定的情况
 
 ### Hook 优势
 
@@ -1295,7 +1320,7 @@ function Counter() {
 }
 ```
 
-指定 `[count]` 作为依赖列表就能修复这个 Bug，但会导致每次改变发生时定时器都被重置。
+指定 `[count]` 作为依赖列表就能修复这个 Bug，但会**导致每次改变发生时定时器都被重置（会执行清楚函数）。**
 
 ```jsx
 function Counter() {
@@ -1312,7 +1337,29 @@ function Counter() {
 }
 ```
 
-==用 `useReducer` Hook 把 state 更新逻辑移到 effect 之外。[这篇文章](https://adamrackis.dev/state-and-use-reducer/)==？
+==？用 `useReducer` Hook 把 state 更新逻辑移到 effect 之外。[这篇文章](https://adamrackis.dev/state-and-use-reducer/)==dispatch永远是稳定的
+
+使用 ref保存可变变量
+
+```jsx
+function Example(props) {
+  // 把最新的 props 保存在一个 ref 中
+  const latestProps = useRef(props);
+  useEffect(() => {
+    latestProps.current = props;
+  });
+
+  useEffect(() => {
+    function tick() {
+      // 在任何时候读取最新的 props
+      console.log(latestProps.current);
+    }
+
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []); // 这个 effect 从不会重新执行
+}
+```
 
 
 
@@ -1326,47 +1373,8 @@ function Counter() {
 
 useEffect 就是在 React 更新 DOM 之后运行一些额外的代码，也就是执行副作用操作，比如请求数据，设置订阅以及手动更改 React 组件中的 DOM 等。
 
-## Class 组件 缺陷
 
-- **难以复用组件间状态逻辑** - 代码冗余
 
-  - 组件状态逻辑的复用，需要 **props render**和**高阶组件**等解决方案，造成层级冗余，嵌套地狱
 
-- **难以维护复杂组件** - 逻辑混乱
-
-  - 不同逻辑混杂在同一生命周期，相同逻辑却在不同生命周期
-  - ==？组件常常充斥着状态逻辑的访问和处理，不能拆分为更小的粒度，可通过状态管理库集中管理状态，但耦合了状态管理库又会导致组件复用性降低==
-
-- **this 指向问题** - 需手动绑定this
-
-  - class 的方法默认不会绑定 this， this值为 undefined。方法中访问 this 则必须**在构造器中绑定**或**使用 class fields 语法**（实验性语法）
-
-  ```jsx
-  class Example extends React.Component {
-   constructor(props) {
-    ...
-    // 方式1: 在构造函数中绑定 this
-    this.handleClick = this.handleClick.bind(this);
-   }
-   handleClick() {
-    this.setState({...})
-   }
-   
-   // 方式2: 使用 class fields 语法
-   handleClick = () => {
-    this.setState({...})
-   }
-  }
-  ```
-
-- **难以对 class 进行编译优化** - 难以优化
-
-  - 由于 JavaScript 历史设计原因，使用 class 组件会让组件预编译过程中变得难以进行优化，如 class 不能很好的压缩，并且会使热重载出现不稳定的情况
-
-## HOOK 优势
-
-- 自定义HOOK：不改变结构的情况下复用逻辑
-- 更小拆分
-- 非 class 的情况下使用更多 React 特性
 
 # https://zh-hans.reactjs.org/docs/hooks-faq.html#what-can-i-do-if-my-effect-dependencies-change-too-often
