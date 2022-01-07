@@ -2021,6 +2021,8 @@ console.log(inputDom.getAttribute('type')) // password
 console.log(inputDom.type) // password
 ```
 
+
+
 # todo 
 
 [侦听器案例](https://cn.vuejs.org/v2/guide/computed.html#%E4%BE%A6%E5%90%AC%E5%99%A8)
