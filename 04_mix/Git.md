@@ -605,6 +605,16 @@ git pull
 
 > 通过添加 ssh key，可以让设备直接下载 项目
 
+## *.crt not found 
+
+fatal: Custom certificate bundle not found at path: D:/*.crt
+
+```shell
+git config --global http.sslCAinfo D:\\git\\Git\\mingw64\\ssl\\certs\\ca-bundle.crt
+```
+
+
+
 ##  ? git 自动化部署
 
 https://docs.github.com/en/developers/webhooks-and-events/webhooks
