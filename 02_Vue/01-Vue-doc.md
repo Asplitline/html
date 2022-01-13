@@ -935,9 +935,18 @@ this.$emit('update:title', newTitle)
 
 ### 编译作用域
 
-> **父**级模板所有内容都是在父级作用域中编译
->
-> **子**模板所有内容都是在子作用域中编译
+插槽不能访问`<navigation-link>`作用域
+
+插槽内容是传递给`<navigation-link>` ，而不是在 `<navigation-link>` 组件内部定义的。
+
+```html
+<navigation-link url="/profile">
+  Clicking here will send you to: {{ url }}
+  <!-- `url` 会是 undefined-->
+</navigation-link>
+```
+
+> **父**模板所有内容都是在父级作用域中编译，**子**模板所有内容都是在子作用域中编译
 
 ### 后备内容
 
@@ -980,6 +989,21 @@ this.$emit('update:title', newTitle)
   </template>
 </base-layout>
 ```
+
+旧版写法：3.0废弃
+
+```html
+<base-layout>
+  <h1 slot="header">Here might be a page title</h1>
+  <!-- 未被v-slot包裹视为默认插槽,v-slot:default -->
+  <p>A paragraph for the main content.</p>
+  <p>And another one.</p>
+
+  <p slot="footer">Here's some contact info</p>
+</base-layout>
+```
+
+
 
 ### 作用域插槽
 
